@@ -1,4 +1,5 @@
 from django.db import models, transaction
+from django.db.utils import IntegrityError
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
@@ -42,11 +43,11 @@ class InternationalSlugMixin(InternationalMixin):
     HANDLE_REDIRECTION_BOOL = False
     SLUGIFY_FROM = None
     TRANSLATION_FIELDS = ['slug', 'auto_slug', 'ref_full_path']
-    slug = models.SlugField(_("Slug"))
+    slug = models.SlugField(_("Slug"), blank=True)
     auto_slug = models.BooleanField(_("Auto Slug"), help_text=_(
         "When set, your slug will automatically be updated from field define in class's SLUGIFY_FROM"),
         default=True)
-    ref_full_path = models.SlugField(_("Denormalized full path"), unique=True)
+    ref_full_path = models.SlugField(_("Denormalized full path"), unique=True, editable=False)
 
     class Meta:
         abstract = True
@@ -124,15 +125,13 @@ class InternationalSlugMixin(InternationalMixin):
         Raises:
             ValidationError: Used to raised the error in forms and serializer
         """
-        for lang, code in settings.LANGUAGES:
+        for lang, code in self.languages:
             # We must test each langugages one by one to get detailed message
             ref_full_path_field_name, ref_full_path = self.get_international_field("ref_full_path", lang)
             slug_field_name, slug = self.get_international_field("slug", lang)
             subclasses = InternationalSlugMixin.__subclasses__()
             for cls in subclasses:
-                qs = cls.objects.filter(**{ref_full_path_field_name: ref_full_path})
-                if cls == self.__class__:
-                    qs = qs.exclude(pk=self.pk)
+                qs = cls.objects.filter(**{ref_full_path_field_name: ref_full_path}).exclude(pk=self.pk)
                 if qs.exists():
                     raise ValidationError(
                         _(f'{slug} is invalid as a {cls.__name__} with full path {ref_full_path} already exists ({lang})'))
@@ -152,7 +151,7 @@ class InternationalSlugMixin(InternationalMixin):
             raise ImproperlyConfigured(
                 f"slugify_from should be defined in {self.__class__}. Attribute '{self.SLUGIFY_FROM}' not found")
 
-        for lang, name in settings.LANGUAGES:
+        for lang, name in self.languages:
             # Define variables to increase code readibility
             slug_field_name, _slug = self.get_international_field("slug", lang)
             field_name, value = self.get_international_field(self.SLUGIFY_FROM, lang)
@@ -172,7 +171,7 @@ class InternationalSlugMixin(InternationalMixin):
         """
         touched = False
         touched_full_path = []
-        for lang, name in settings.LANGUAGES:
+        for lang, name in self.languages:
             ref_full_path_field_name, old_full_path = self.get_international_field("ref_full_path", lang)
             new_full_path = self.full_path(lang)
             self.set_international_field('ref_full_path', lang, new_full_path)
@@ -208,7 +207,7 @@ class InternationalSlugMixin(InternationalMixin):
         """
         slug_field_name, _slug = self.get_international_field("slug", lang)
         if self._parent is None:
-            return f'/{lang}/{_slug}/'
+            return f'/{lang}/{_slug}/' if lang else f'/{_slug}/'
         else:
             parent_ref_full_path_field_name, parent_ref_full_path = self._parent.get_international_field(
                 "ref_full_path", lang)
@@ -223,6 +222,10 @@ class InternationalSlugMixin(InternationalMixin):
         """
         for old_full_path, new_full_path in full_paths:
             with transaction.atomic():
-                Redirect.objects.create(old_path=old_full_path, new_path=new_full_path, site_id=settings.SITE_ID)
+                try:
+                    Redirect.objects.create(old_path=old_full_path, new_path=new_full_path, site_id=settings.SITE_ID)
+                except IntegrityError:
+                    Redirect.objects.filter(old_path=old_full_path,
+                                            site_id=settings.SITE_ID).update(new_path=new_full_path)
                 Redirect.objects.filter(new_path=old_full_path,
                                         site_id=settings.SITE_ID).update(new_path=new_full_path)

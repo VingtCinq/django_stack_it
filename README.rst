@@ -31,7 +31,7 @@ Add it to your `INSTALLED_APPS`:
 
     INSTALLED_APPS = (
         ...
-        'stack_it.apps.StackItConfig',
+        'stack_it',
         ...
     )
 

@@ -1,0 +1,50 @@
+{% load i18n static admin_urls %}
+
+{% if result_hidden_fields %}
+<div class="hiddenfields">{# DIV for HTML validation #}
+{% for item in result_hidden_fields %}{{ item }}{% endfor %}
+</div>
+{% endif %}
+
+<div class="results">
+    {% if results %}
+        <table id="result_list">
+            <thead>
+                <tr>
+                {% for header in result_headers %}
+                    <th scope="col" {{ header.class_attrib }}>
+                    {% if header.sortable %}
+                        {% if header.sort_priority > 0 %}
+                        <div class="sortoptions">
+                            <a class="sortremove" href="{{ header.url_remove }}" title="{% trans "Remove from sorting" %}"></a>
+                            {% if num_sorted_fields > 1 %}<span class="sortpriority" title="{% blocktrans with priority_number=header.sort_priority %}Sorting priority: {{ priority_number }}{% endblocktrans %}">{{ header.sort_priority }}</span>{% endif %}
+                            <a href="{{ header.url_toggle }}" class="toggle {% if header.ascending %}ascending{% else %}descending{% endif %}" title="{% trans "Toggle sorting" %}"></a>
+                        </div>
+                        {% endif %}
+                    {% endif %}
+                    <div class="text">{% if header.sortable %}<a href="{{ header.url_primary }}">{{ header.text|capfirst }}</a>{% else %}<span>{{ header.text|capfirst }}</span>{% endif %}</div>
+                    <div class="clear"></div>
+                    </th>
+                {% endfor %}
+                </tr>
+            </thead>
+        </table>
+        <div class="mm">
+            {% for item in cl.result_list %}
+                <div class="mm-item mm-item-image" data-item="{{item.pk}}">
+                    <img src="{{ item.admin_thumbnail.url }}" alt="">
+                    <div class="mm-footer">
+                        <div class="mm-filename">{{ item.filename }}</div>
+                        <ul class="mm-actions">
+                            <li class="js-see" data-url="{{ item.url }}"><img src="{% static "admin/img/eye.svg" %}" alt="Delete"></li>
+                            <li class="js-edit" data-url="{% url opts|admin_urlname:'change' item.pk %}"><img src="{% static "admin/img/pencil.svg" %}" alt="Delete"></li>
+                            <li class="js-delete"><img src="{% static "admin/img/trash-o.svg" %}" alt="Delete"></li>
+                        </ul>
+                    </div>
+                </div>
+                
+            {% endfor %}
+            <div class="clear"></div>
+        </div>
+    {% endif %}
+</div>

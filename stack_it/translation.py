@@ -5,6 +5,7 @@ from stack_it.seo.mixins import InternationalSlugMixin
 
 class PageTranslation(TranslationOptions):
     fields = InternationalSlugMixin.TRANSLATION_FIELDS + [
+        'slug',
         'title',
     ]
 

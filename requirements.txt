@@ -1,2 +1,15 @@
-
-# Additional requirements go here
+Django==2.1.5
+django-appconf==1.0.3
+django-imagekit==4.0.2
+django-js-asset==1.2.2
+django-model-utils==3.1.2
+django-mptt==0.9.1
+django-polymorphic==2.0.3
+django-polymorphic-tree==1.5
+django-tag-parser==3.1
+future==0.17.1
+pilkit==2.0
+Pillow==5.4.1
+psycopg2==2.7.7
+pytz==2018.9
+six==1.12.0

@@ -24,7 +24,7 @@ DATABASES = {
 ROOT_URLCONF = "tests.urls"
 
 INSTALLED_APPS = [
-    "modeltranslation",
+    # "modeltranslation",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sites",
@@ -78,3 +78,11 @@ LANGUAGE_CODE = 'en-us'
 MODELTRANSLATION_AUTO_POPULATE = True
 MODELTRANSLATION_ENABLE_FALLBACKS = True
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+FOLDER = 'folder'
+BASE_FOLDER = FOLDER
+MEDIA_FOLDERS = [
+    'FOLDER',
+]
+MEDIA_FOLDER_CHOICES = tuple((globals()[i], globals()[i]) for i in MEDIA_FOLDERS)

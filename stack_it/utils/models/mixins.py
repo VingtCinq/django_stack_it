@@ -1,6 +1,6 @@
 """Summary
 """
-from modeltranslation.utils import build_localized_fieldname
+from modeltranslation.utils import build_localized_fieldname as original_build_localized_fieldname
 from model_utils import FieldTracker
 from model_utils.models import SoftDeletableModel, TimeStampedModel
 from django.conf import settings
@@ -39,6 +39,17 @@ class BaseModelMixin(TimeStampedModel):
         super(BaseModelMixin, self).__init__(*args, **kwargs)
 
 
+class classproperty(property):
+    def __get__(self, cls, owner):
+        return classmethod(self.fget).__get__(None, owner)()
+
+
+def build_localized_fieldname(field_name, lang=None):
+    if lang is not None:
+        return original_build_localized_fieldname(field_name, lang)
+    return field_name
+
+
 class InternationalMixin(BaseModelMixin):
     """
     Mixins to get & set international fields easily.
@@ -46,6 +57,14 @@ class InternationalMixin(BaseModelMixin):
     """
     class Meta:
         abstract = True
+
+    @classproperty
+    def languages(cls):
+        if "modeltranslation" in settings.INSTALLED_APPS:
+            languages = settings.LANGUAGES
+        else:
+            languages = [(None, None), ]
+        return languages
 
     @classmethod
     def get_international_extra_kwargs(cls, fields):
@@ -72,7 +91,7 @@ class InternationalMixin(BaseModelMixin):
         return dict(
             [
                 (build_localized_fieldname(field, lang), kwargs)
-                for lang, name in settings.LANGUAGES for field, kwargs in fields
+                for lang, name in cls.languages for field, kwargs in fields
             ])
 
     @classmethod
@@ -90,7 +109,7 @@ class InternationalMixin(BaseModelMixin):
         Tests
         -test_utils.test_unit_international_mixins.InternationalMixinsUnitTest.test_get_international_field_names
         """
-        return [build_localized_fieldname(field_name, lang) for lang, name in settings.LANGUAGES]
+        return [build_localized_fieldname(field_name, lang) for lang, name in cls.languages]
 
     @classmethod
     def get_international_field_name(cls, field_name, lang):
@@ -139,7 +158,7 @@ class InternationalMixin(BaseModelMixin):
                 }
         """
         _dict = dict()
-        for lang, name in settings.LANGUAGES:
+        for lang, name in cls.languages:
             intl_field_name = cls.get_international_field_name(field_name, lang)
             _dict.update({intl_field_name: value})
         return _dict
@@ -191,4 +210,4 @@ class InternationalMixin(BaseModelMixin):
                     'field_en_us': "World"
                 }
         """
-        return dict([self.get_international_field(field_name, lang) for lang, code in settings.LANGUAGES])
+        return dict([self.get_international_field(field_name, lang) for lang, code in self.languages])
