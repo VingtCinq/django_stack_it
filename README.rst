@@ -5,7 +5,7 @@ django-stack-it
 .. image:: https://badge.fury.io/py/django-stack-it.svg
     :target: https://badge.fury.io/py/django-stack-it
 
-.. image:: https://travis-ci.org/jufik/django-stack-it.svg?branch=master
+.. image:: https://travis-ci.org/Jufik/django-stack-it.svg?branch=master
     :target: https://travis-ci.org/jufik/django-stack-it
 
 .. image:: https://codecov.io/gh/jufik/django-stack-it/branch/master/graph/badge.svg
