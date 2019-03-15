@@ -14,10 +14,12 @@ matrix:
   fast_finish: true
 
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
-install: pip install -r requirements_test.txt
+install: 
+  -pip install -q Django==$DJANGO_VERSION
+  -pip install -r requirements_test.txt
 
 # command to run tests using coverage, e.g. python setup.py test
-script: tox -e $TOX_ENV
+script: CONF=travis tox -e $TOX_ENV
 
 after_success:
   - codecov -e TOX_ENV

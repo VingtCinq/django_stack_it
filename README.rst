@@ -11,7 +11,8 @@ django_stack_it
 .. image:: https://codecov.io/gh/jufik/django_stack_it/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/jufik/django_stack_it
 
-Content management system: Pages is a list of (ordered) block and relevant content. Though to allow inline i18n content management, with high performance usage.
+Content management system under development
+
 
 Documentation
 -------------
