@@ -1,15 +1,15 @@
 =============================
-django_stack_it
+django-stack-it
 =============================
 
-.. image:: https://badge.fury.io/py/django_stack_it.svg
-    :target: https://badge.fury.io/py/django_stack_it
+.. image:: https://badge.fury.io/py/django-stack-it.svg
+    :target: https://badge.fury.io/py/django-stack-it
 
-.. image:: https://travis-ci.org/jufik/django_stack_it.svg?branch=master
-    :target: https://travis-ci.org/jufik/django_stack_it
+.. image:: https://travis-ci.org/jufik/django-stack-it.svg?branch=master
+    :target: https://travis-ci.org/jufik/django-stack-it
 
-.. image:: https://codecov.io/gh/jufik/django_stack_it/branch/master/graph/badge.svg
-    :target: https://codecov.io/gh/jufik/django_stack_it
+.. image:: https://codecov.io/gh/jufik/django-stack-it/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/jufik/django-stack-it
 
 Content management system under development
 
@@ -17,14 +17,14 @@ Content management system under development
 Documentation
 -------------
 
-The full documentation is at https://django_stack_it.readthedocs.io.
+The full documentation is at https://django-stack-it.readthedocs.io.
 
 Quickstart
 ----------
 
-Install django_stack_it::
+Install django-stack-it::
 
-    pip install django_stack_it
+    pip install django-stack-it
 
 Django Stack It relies on several dependencies, you need to add to your INSTALLED_APPS
 
@@ -40,7 +40,7 @@ Django Stack It relies on several dependencies, you need to add to your INSTALLE
         ...
     )
     
-Add django_stack_it's URL patterns:
+Add django-stack-it's URL patterns:
 
 .. code-block:: python
     urlpatterns = [
