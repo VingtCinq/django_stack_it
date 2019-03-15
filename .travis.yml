@@ -25,4 +25,4 @@ install:
 # command to run tests using coverage, e.g. python setup.py test
 script: CONF=travis tox
 after_success:
-  - codecov -e TOX_ENV
+  - codecov
