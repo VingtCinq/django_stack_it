@@ -1,6 +1,8 @@
 *.py[cod]
 __pycache__
 
+/tests/media/
+
 # C extensions
 *.so
 

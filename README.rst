@@ -25,29 +25,66 @@ Install django_stack_it::
 
     pip install django_stack_it
 
-Add it to your `INSTALLED_APPS`:
+Django Stack It relies on several dependencies, you need to add to your INSTALLED_APPS
 
 .. code-block:: python
 
     INSTALLED_APPS = (
         ...
-        'stack_it',
+        'polymorphic_tree',
+        'polymorphic',
+        'mptt',
+        'imagekit',
+        'stack_it'
         ...
     )
-
+    
 Add django_stack_it's URL patterns:
 
 .. code-block:: python
-
-    from stack_it import urls as stack_it_urls
-
-
     urlpatterns = [
         ...
-        url(r'^', include(stack_it_urls)),
+        path(r'^', include('stack_it.urls')),
         ...
     ]
+    
+Basic Usage
+----------
+As soon as you a model is linked to a URL, it should inherit from the `Page` model.
 
+.. code-block:: python
+    from stack_it.models import Page
+
+    class Article(Page):
+        """
+        Your model here
+        """
+        ....
+Article is now considered to be a Page.
+It comes with several usefull fields like `title`, `slug` dans `template_path`.
+
+Register your model to the admin the way you want, 
+and you can see all your website organization within one unified admin doing:
+
+.. code-block:: python
+    from stack_it.admin import PageAdmin as BasePageAdmin
+    from stack_it.models import Page
+    from blog.models import Article
+    
+    class PageAdmin(BasePageAdmin):
+        base_model = Page
+        child_models = (
+            ...Your inherited model here,
+            Article,
+            ...
+        )
+     admin.site.register(Page, PageAdmin)
+
+`Article` or any other model won't show up in the admin anymore.
+Each model and model instances will be managed from the "Page" admin,
+where all your pages are organized in a Drag n Drop interface to build up your site structure.
+
+    
 Features
 --------
 
