@@ -1,6 +1,9 @@
 """Summary
 """
-from modeltranslation.utils import build_localized_fieldname as original_build_localized_fieldname
+try:
+    from modeltranslation.utils import build_localized_fieldname as original_build_localized_fieldname
+except ImportError:
+    def original_build_localized_fieldname(x): return x
 from model_utils import FieldTracker
 from model_utils.models import SoftDeletableModel, TimeStampedModel
 from django.conf import settings
