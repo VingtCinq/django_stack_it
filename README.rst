@@ -9,7 +9,7 @@ django-stack-it
     :target: https://travis-ci.org/Jufik/django_stack_it
 
 .. image:: https://codecov.io/gh/jufik/django-stack-it/branch/master/graph/badge.svg
-    :target: https://codecov.io/gh/jufik/django-stack-it
+    :target: https://codecov.io/gh/jufik/django_stack_it
 
 Content management system under development
 

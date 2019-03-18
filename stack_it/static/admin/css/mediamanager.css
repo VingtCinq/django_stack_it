@@ -1,0 +1,124 @@
+.mm .mm-item {
+    width: 150px;
+    height: 150px;
+    margin: 5px;
+    display: block;
+    float: left;
+    position: relative;
+    overflow: hidden;
+}
+
+.mm .mm-item-image > img {
+    display: block;
+    width: 150px;
+    height: 150px;
+}
+
+
+.mm .mm-item-attachment {
+    background-color: #666;
+    color: #FFF;
+    text-align: center;
+}
+
+.mm .mm-item-attachment > img {
+    display: block;
+    position: absolute;
+    top: 20px;
+    left: 35px;
+    height: 80px;
+    width: 80px;
+}
+
+.mm .mm-text {
+    display: block;
+    position: absolute;
+    text-align: center;
+    top: 60px;
+    left: 0;
+    right: 0;   
+}
+
+.mm .mm-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 5px 0;
+    text-align: center;
+    font-size: 0.9em;
+    color: #FFF;
+    background-color: rgba(0, 0, 0, 0.5);
+    margin-bottom: -100%;
+    transition: all 0.3s;
+}
+
+
+.mm .mm-item:hover .mm-footer {
+    margin-bottom: 0;
+}
+
+.mm-form {
+    position: relative;
+    margin-right: 280px;
+    margin-bottom: 20px;
+}
+
+.mm-form select {
+    position: absolute;
+    top: 0;
+    left: 0;
+    -webkit-appearance: none; 
+    -moz-appearance: none;
+    appearance: none; 
+    z-index: 99;
+}
+
+.mm-form .mm-zone {
+    border-color: #f8f8f8;
+    padding: 0;
+    min-height: auto;
+}
+
+.mm-filename {
+    padding: 0 5px 5px 5px;
+}
+
+.mm .mm-actions {
+    display: block;
+    padding: 3px 0 0 0;
+    margin: 0;
+    text-align: center;
+}
+
+.mm-actions li {
+    display: inline-block;
+    text-align: center;
+}
+
+.mm-actions li:hover {
+    cursor: pointer;
+}
+
+.mm-actions li img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 5px;
+    margin: 2px 3px 0 3px;
+    border-radius: 20px;
+    width: 20px;
+    height: 20px;
+}
+
+.mm-actions li img:hover {
+    background-color: #417690;
+}
+
+.mm-actions li.js-delete img:hover {
+    background-color: red;
+}
+
+#changelist #toolbar {
+    margin-bottom: 0 !important;
+}

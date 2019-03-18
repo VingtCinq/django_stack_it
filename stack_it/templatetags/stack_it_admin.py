@@ -15,7 +15,6 @@ def image_result_list(cl):
     for h in headers:
         if h['sortable'] and h['sorted']:
             num_sorted_fields += 1
-    print(cl.result_list)
     return {'cl': cl,
             'result_hidden_fields': list(result_hidden_fields(cl)),
             'result_headers': headers,

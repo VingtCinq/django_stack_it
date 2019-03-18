@@ -9,7 +9,6 @@ class StackItView(View):
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object(**kwargs)
-        print(self.object.template_path)
         return render(request, self.object.template_path, self.get_context_data())
 
     def get_object(self, *args, **kwargs):

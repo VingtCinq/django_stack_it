@@ -18,7 +18,6 @@ def build_image_thumb(field_name):
     """
 
     def thumb(self, obj):
-        print(self)
         image = getattr(obj, field_name)
         if image:
             return mark_safe(f'<img id="{field_name}_display" src="{image.admin_thumbnail.url}" >')
@@ -48,12 +47,12 @@ class ImageAdmin(admin.ModelAdmin):
             url(
                 r'^js/upload$',
                 self.admin_site.admin_view(self.image_upload),
-                name='image_upload',
+                name='stack_it_image_image_upload',
             ),
             url(
                 r'^(.+)/js/delete$',
                 self.admin_site.admin_view(self.image_delete),
-                name='image_delete',
+                name='stack_it_image_image_delete',
             ),
         ] + super(ImageAdmin, self).get_urls()
 

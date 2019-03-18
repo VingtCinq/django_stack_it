@@ -16,5 +16,6 @@ class ModelBaseContentMixinUnitTest(AbstractModelTestMixin):
     mixin = BaseContentMixin
 
     def test_instance(self):
-        self.model.objects.create(key='hello')
+        obj = self.model.objects.create(key='hello')
         self.assertEqual(self.model.objects.count(), 1)
+        self.assertIsNotNone(str(obj))

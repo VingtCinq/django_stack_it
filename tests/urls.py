@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals, absolute_import
 
-from django.conf.urls import url, include
+from django.urls import path, include
+from django.contrib import admin
 
 
 urlpatterns = [
-    # url(r'^', include('stack_it.urls', namespace='stack_it')),
+    path('admin/', admin.site.urls),
+    path('', include('stack_it.urls')),
 ]

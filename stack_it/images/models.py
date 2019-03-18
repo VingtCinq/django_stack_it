@@ -35,7 +35,8 @@ class Image(BaseModelMixin):
         (MEDIA_ATTACHMENT, 'Attachment',)
     )
     locals().update([[folder, getattr(settings, folder)]for folder in settings.MEDIA_FOLDERS])
-    folder = models.CharField('Folder', max_length=50, choices=settings.MEDIA_FOLDER_CHOICES, default=settings.BASE_FOLDER)
+    folder = models.CharField(_('Folder'), max_length=50, choices=settings.MEDIA_FOLDER_CHOICES,
+                              default=settings.BASE_FOLDER)
 
     image = models.ImageField(_("Image"))
     alt = models.CharField(_("Alternative text"), max_length=50, blank=True)

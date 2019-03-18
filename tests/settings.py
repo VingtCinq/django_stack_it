@@ -9,6 +9,7 @@ USE_I18N = True
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "lf=g&ei5pq)3)1c9p*1e@_pl-2y64+rcc44+rv-02zc)6=ichc"
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -21,14 +22,17 @@ DATABASES = {
 }
 
 
+
 ROOT_URLCONF = "tests.urls"
 
 INSTALLED_APPS = [
     "modeltranslation",
     "django.contrib.auth",
     "django.contrib.contenttypes",
+    "django.contrib.sessions",
     "django.contrib.sites",
     "django.contrib.redirects",
+    "django.contrib.admin",
     "polymorphic_tree",
     "polymorphic",
     "mptt",
@@ -40,7 +44,16 @@ INSTALLED_APPS = [
 
 SITE_ID = 1
 
-MIDDLEWARE_CLASSES = ()
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
 
 TEMPLATES = [
     {

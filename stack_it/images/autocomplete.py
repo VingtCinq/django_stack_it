@@ -34,7 +34,6 @@ class AutocompleteJsonView(BaseAutocompleteJsonView):
         context = self.get_context_data()
 
         autocomplete_image = hasattr(self.model_admin.model, 'autocomplete_image')
-        # print(self.model_admin.model._meta.fields)
         return JsonResponse({
             'results': [
                 {'id': str(obj.pk),
