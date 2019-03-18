@@ -14,11 +14,6 @@ django-stack-it
 Content management system under development
 
 
-Documentation
--------------
-
-The full documentation is at https://django-stack-it.readthedocs.io.
-
 Quickstart
 ----------
 
