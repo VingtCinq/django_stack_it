@@ -14,6 +14,7 @@ class SEOMixin(models.Model):
     Simple page to handle SEO specific fields & problematic
     TODO: add specific fields & methods
     """
+
     class Meta:
         abstract = True
 
@@ -42,12 +43,18 @@ class InternationalSlugMixin(InternationalMixin):
     ENSURE_SLUG_UNICITY_BOOL = False
     HANDLE_REDIRECTION_BOOL = False
     SLUGIFY_FROM = None
-    TRANSLATION_FIELDS = ['slug', 'auto_slug', 'ref_full_path']
+    TRANSLATION_FIELDS = ["slug", "auto_slug", "ref_full_path"]
     slug = models.SlugField(_("Slug"), blank=True)
-    auto_slug = models.BooleanField(_("Auto Slug"), help_text=_(
-        "When set, your slug will automatically be updated from field define in class's SLUGIFY_FROM"),
-        default=True)
-    ref_full_path = models.SlugField(_("Denormalized full path"), unique=True, editable=False)
+    auto_slug = models.BooleanField(
+        _("Auto Slug"),
+        help_text=_(
+            "When set, your slug will automatically be updated from field define in class's SLUGIFY_FROM"
+        ),
+        default=True,
+    )
+    ref_full_path = models.SlugField(
+        _("Denormalized full path"), unique=True, editable=False
+    )
 
     class Meta:
         abstract = True
@@ -93,7 +100,8 @@ class InternationalSlugMixin(InternationalMixin):
             return getattr(self, self.TREE_PARENT_FIELD)
         else:
             raise ImproperlyConfigured(
-                f"tree_parent_field should be defined in {self.__class__}. Attribute '{self.TREE_PARENT_FIELD}'' not found")
+                f"tree_parent_field should be defined in {self.__class__}. Attribute '{self.TREE_PARENT_FIELD}'' not found"
+            )
 
     @_parent.setter
     def _parent(self, value):
@@ -115,7 +123,8 @@ class InternationalSlugMixin(InternationalMixin):
             return
         else:
             raise ImproperlyConfigured(
-                f"tree_parent_field should be defined in {self.__class__}. Attribute '{self.TREE_PARENT_FIELD}'' not found")
+                f"tree_parent_field should be defined in {self.__class__}. Attribute '{self.TREE_PARENT_FIELD}'' not found"
+            )
 
     def ensure_slug_unicity(self):
         """
@@ -127,14 +136,21 @@ class InternationalSlugMixin(InternationalMixin):
         """
         for lang, code in self.languages:
             # We must test each langugages one by one to get detailed message
-            ref_full_path_field_name, ref_full_path = self.get_international_field("ref_full_path", lang)
+            ref_full_path_field_name, ref_full_path = self.get_international_field(
+                "ref_full_path", lang
+            )
             slug_field_name, slug = self.get_international_field("slug", lang)
             subclasses = InternationalSlugMixin.__subclasses__()
             for cls in subclasses:
-                qs = cls.objects.filter(**{ref_full_path_field_name: ref_full_path}).exclude(pk=self.pk)
+                qs = cls.objects.filter(
+                    **{ref_full_path_field_name: ref_full_path}
+                ).exclude(pk=self.pk)
                 if qs.exists():
                     raise ValidationError(
-                        _(f'{slug} is invalid as a {cls.__name__} with full path {ref_full_path} already exists ({lang})'))
+                        _(
+                            f"{slug} is invalid as a {cls.__name__} with full path {ref_full_path} already exists ({lang})"
+                        )
+                    )
 
     def slugify(self, created=False):
         """
@@ -149,16 +165,19 @@ class InternationalSlugMixin(InternationalMixin):
         """
         if self.SLUGIFY_FROM is None or not hasattr(self, self.SLUGIFY_FROM):
             raise ImproperlyConfigured(
-                f"slugify_from should be defined in {self.__class__}. Attribute '{self.SLUGIFY_FROM}' not found")
+                f"slugify_from should be defined in {self.__class__}. Attribute '{self.SLUGIFY_FROM}' not found"
+            )
 
         for lang, name in self.languages:
             # Define variables to increase code readibility
             slug_field_name, _slug = self.get_international_field("slug", lang)
             field_name, value = self.get_international_field(self.SLUGIFY_FROM, lang)
-            auto_slug_field_name, _auto_slug = self.get_international_field("auto_slug", lang)
+            auto_slug_field_name, _auto_slug = self.get_international_field(
+                "auto_slug", lang
+            )
 
             if (self.tracker.has_changed(field_name) or created) and _auto_slug:
-                self.set_international_field('slug', lang, slugify(value))
+                self.set_international_field("slug", lang, slugify(value))
 
     def denormalize_full_path(self, created=True, save=True, propagate=True):
         """
@@ -172,16 +191,20 @@ class InternationalSlugMixin(InternationalMixin):
         touched = False
         touched_full_path = []
         for lang, name in self.languages:
-            ref_full_path_field_name, old_full_path = self.get_international_field("ref_full_path", lang)
+            ref_full_path_field_name, old_full_path = self.get_international_field(
+                "ref_full_path", lang
+            )
             new_full_path = self.full_path(lang)
-            self.set_international_field('ref_full_path', lang, new_full_path)
+            self.set_international_field("ref_full_path", lang, new_full_path)
             if self.tracker.has_changed(ref_full_path_field_name) or created:
                 touched = True
                 touched_full_path.append((old_full_path, new_full_path))
 
         if created:
-            Redirect.objects.filter(old_path__in=[new for old, new in touched_full_path],
-                                    site_id=settings.SITE_ID).delete()
+            Redirect.objects.filter(
+                old_path__in=[new for old, new in touched_full_path],
+                site_id=settings.SITE_ID,
+            ).delete()
 
         if touched and (not created) and self.HANDLE_REDIRECTION_BOOL:
             self.handle_redirection(touched_full_path)
@@ -207,11 +230,12 @@ class InternationalSlugMixin(InternationalMixin):
         """
         slug_field_name, _slug = self.get_international_field("slug", lang)
         if self._parent is None:
-            return f'/{lang}/{_slug}/' if lang else f'/{_slug}/'
+            return f"/{lang}/{_slug}/" if lang else f"/{_slug}/"
         else:
             parent_ref_full_path_field_name, parent_ref_full_path = self._parent.get_international_field(
-                "ref_full_path", lang)
-            return f'{parent_ref_full_path}{_slug}/'
+                "ref_full_path", lang
+            )
+            return f"{parent_ref_full_path}{_slug}/"
 
     def handle_redirection(self, full_paths):
         """
@@ -221,11 +245,18 @@ class InternationalSlugMixin(InternationalMixin):
             full_paths (list): List of str, giving which paths need redirection
         """
         for old_full_path, new_full_path in full_paths:
-            with transaction.atomic():
-                try:
-                    Redirect.objects.create(old_path=old_full_path, new_path=new_full_path, site_id=settings.SITE_ID)
-                except IntegrityError:
-                    Redirect.objects.filter(old_path=old_full_path,
-                                            site_id=settings.SITE_ID).update(new_path=new_full_path)
-                Redirect.objects.filter(new_path=old_full_path,
-                                        site_id=settings.SITE_ID).update(new_path=new_full_path)
+            try:
+                with transaction.atomic():
+                    Redirect.objects.create(
+                        old_path=old_full_path,
+                        new_path=new_full_path,
+                        site_id=settings.SITE_ID,
+                    )
+            except IntegrityError:
+                Redirect.objects.filter(
+                    old_path=old_full_path, site_id=settings.SITE_ID
+                ).update(new_path=new_full_path)
+            Redirect.objects.filter(
+                new_path=old_full_path, site_id=settings.SITE_ID
+            ).update(new_path=new_full_path)
+

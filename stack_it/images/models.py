@@ -28,25 +28,29 @@ class Image(BaseModelMixin):
         alt (CharField): Alternative text used for image description
         image (ImageField): Image source file
     """
+
     MEDIA_IMAGE = 0
     MEDIA_ATTACHMENT = 1
-    MEDIA_TYPE_CHOICES = (
-        (MEDIA_IMAGE, 'Image',),
-        (MEDIA_ATTACHMENT, 'Attachment',)
+    MEDIA_TYPE_CHOICES = ((MEDIA_IMAGE, "Image"), (MEDIA_ATTACHMENT, "Attachment"))
+    locals().update(
+        [[folder, getattr(settings, folder)] for folder in settings.MEDIA_FOLDERS]
     )
-    locals().update([[folder, getattr(settings, folder)]for folder in settings.MEDIA_FOLDERS])
-    folder = models.CharField(_('Folder'), max_length=50, choices=settings.MEDIA_FOLDER_CHOICES,
-                              default=settings.BASE_FOLDER)
+    folder = models.CharField(
+        _("Folder"),
+        max_length=50,
+        choices=settings.MEDIA_FOLDER_CHOICES,
+        default=settings.BASE_FOLDER,
+    )
 
     image = models.ImageField(_("Image"))
     alt = models.CharField(_("Alternative text"), max_length=50, blank=True)
 
-    admin_thumbnail = ImageSpecField(source='image',
-                                     processors=[
-                                         ResizeToFill(200, 200),
-                                     ],
-                                     format='JPEG',
-                                     options={'quality': 72})
+    admin_thumbnail = ImageSpecField(
+        source="image",
+        processors=[ResizeToFill(200, 200)],
+        format="JPEG",
+        options={"quality": 72},
+    )
 
     class Meta:
         verbose_name = _("Image")
@@ -64,11 +68,34 @@ class Image(BaseModelMixin):
         You want to update all instances related to current instance
         """
         super(Image, self).save(*args, **kwargs)
-        if self.tracker.has_changed('image'):
+        if self.tracker.has_changed("image"):
             ImageRelatedMixin.update_all(self)
 
+    @classmethod
+    def init_image(
+        cls, name="test.jpeg", ext="jpeg", size=(1500, 1500), color=(0, 0, 0)
+    ):
+        """Summary
+
+        Args:
+            cls: Class
+            name (str, optional): Description
+            ext (str, optional): Description
+            size (tuple, optional): Description
+            color (tuple, optional): Description
+
+        Returns:
+            cls: Instanciated image
+        """
+        return cls.objects.create(
+            image=cls.create_empty_image_file(name, ext, size, color),
+            alt="Image plachoder",
+        )
+
     @staticmethod
-    def create_empty_image_file(name='test.jpeg', ext='jpeg', size=(1500, 1500), color=(256, 0, 0)):
+    def create_empty_image_file(
+        name="test.jpeg", ext="jpeg", size=(1500, 1500), color=(0, 0, 0)
+    ):
         """Summary
 
         Args:

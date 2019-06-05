@@ -19,12 +19,17 @@ class PageContent(BaseContentMixin):
         page (ForeignKey): Page instance where content belongs
     """
 
-    page = models.ForeignKey("stack_it.Page", verbose_name=_("Page"), related_name="contents", on_delete=models.CASCADE)
+    page = models.ForeignKey(
+        "stack_it.Page",
+        verbose_name=_("Page"),
+        related_name="contents",
+        on_delete=models.CASCADE,
+    )
 
     class Meta:
         verbose_name = _("Page Content")
         verbose_name_plural = _("Page Contents")
-        unique_together = (('page', 'key'),)
+        unique_together = (("page", "key"),)
 
 
 class TextPageContent(PageContent, TextBaseContentMixin):
@@ -36,8 +41,8 @@ class TextPageContent(PageContent, TextBaseContentMixin):
     """
 
     class Meta:
-        verbose_name = _('Text Page Content')
-        verbose_name_plural = _('Text Page Contents')
+        verbose_name = _("Text Page Content")
+        verbose_name_plural = _("Text Page Contents")
 
 
 class ImagePageContent(PageContent, ImageBaseContentMixin):
@@ -49,8 +54,8 @@ class ImagePageContent(PageContent, ImageBaseContentMixin):
     """
 
     class Meta:
-        verbose_name = _('Image Page Content')
-        verbose_name_plural = _('Image Page Contents')
+        verbose_name = _("Image Page Content")
+        verbose_name_plural = _("Image Page Contents")
 
 
 class PagePageContent(PageContent, PageBaseContentMixin):
@@ -62,8 +67,8 @@ class PagePageContent(PageContent, PageBaseContentMixin):
     """
 
     class Meta:
-        verbose_name = _('Related Page Page Content')
-        verbose_name_plural = _('Related Page Page Contents')
+        verbose_name = _("Related Page Page Content")
+        verbose_name_plural = _("Related Page Page Contents")
 
 
 class ModelPageContent(PageContent, ModelBaseContentMixin):
@@ -75,5 +80,5 @@ class ModelPageContent(PageContent, ModelBaseContentMixin):
     """
 
     class Meta:
-        verbose_name = _('Related Model Page Content')
-        verbose_name_plural = _('Related Model Page Contents')
+        verbose_name = _("Related Model Page Content")
+        verbose_name_plural = _("Related Model Page Contents")

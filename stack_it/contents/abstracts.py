@@ -33,15 +33,14 @@ class BaseContentMixin(BaseModelMixin, PolymorphicModel):
         test.test_content.abstract.test_base_content_mixin
     """
 
-    META = 'meta'
-    VALUE = 'value'
+    META = "meta"
+    VALUE = "value"
 
-    CONTENT_TYPES = (
-        (META, _("Meta content")),
-        (VALUE, _("Standard content")),
-    )
+    CONTENT_TYPES = ((META, _("Meta content")), (VALUE, _("Standard content")))
     key = models.CharField(_("Key"), max_length=50, blank=False)
-    content_type = models.CharField(_("Content Type"), max_length=50, choices=CONTENT_TYPES, default=VALUE)
+    content_type = models.CharField(
+        _("Content Type"), max_length=50, choices=CONTENT_TYPES, default=VALUE
+    )
 
     class Meta:
         abstract = True
@@ -59,6 +58,7 @@ class TextBaseContentMixin(models.Model):
         test.test_content.abstract.test_text_base_content_mixin
 
     """
+
     value = models.TextField(_("Value"))
 
     class Meta:
@@ -82,8 +82,11 @@ class ImageBaseContentMixin(ImageRelatedMixin):
         test.test_content.abstract.test_image_base_content_mixin
 
     """
-    size = models.CharField(_("Size"), max_length=50, default="800x600", validators=[validate_image_size])
-    value = ImageSpecField(source='ref_image', id='utils:processors:resized_image')
+
+    size = models.CharField(
+        _("Size"), max_length=50, default="800x600", validators=[validate_image_size]
+    )
+    value = ImageSpecField(source="ref_image", id="utils:processors:resized_image")
 
     class Meta:
         abstract = True
@@ -107,7 +110,7 @@ class ImageBaseContentMixin(ImageRelatedMixin):
         Returns:
             tuple: (width,heigt)
         """
-        return tuple((int(size) for size in self.size.split('x')))
+        return tuple((int(size) for size in self.size.split("x")))
 
     @property
     def width(self):
@@ -116,6 +119,28 @@ class ImageBaseContentMixin(ImageRelatedMixin):
     @property
     def height(self):
         return self.parsed_size[1]
+
+    @property
+    def url(self):
+        return self.value.url
+
+    @classmethod
+    def init(cls, **kwargs):
+        from stack_it.models import Image
+
+        try:
+            color = kwargs.pop("color")
+        except KeyError:
+            color = (0, 0, 0)
+        content = cls(**kwargs)
+        image = Image.init_image(
+            name="init-{key}-{size}.jpg".format(**kwargs),
+            size=content.parsed_size,
+            color=color,
+        )
+        content.image = image
+        content.save()
+        return content
 
 
 class PageBaseContentMixin(models.Model):
@@ -131,8 +156,13 @@ class PageBaseContentMixin(models.Model):
         test.test_content.abstract.test_page_base_content_mixin
 
     """
-    value = models.ForeignKey("stack_it.Page", related_name="related_%(class)s",
-                              verbose_name=_("Page"), on_delete=models.CASCADE)
+
+    value = models.ForeignKey(
+        "stack_it.Page",
+        related_name="related_%(class)s",
+        verbose_name=_("Page"),
+        on_delete=models.CASCADE,
+    )
 
     class Meta:
         abstract = True
@@ -153,15 +183,18 @@ class ModelBaseContentMixin(models.Model):
         test.test_content.abstract.test_model_base_content_mixin
 
     """
+
     instance_id = models.IntegerField(_("Object id"), null=True)
-    model_name = models.CharField(_('Model Name'), max_length=50, validators=[validate_model_name])
+    model_name = models.CharField(
+        _("Model Name"), max_length=50, validators=[validate_model_name]
+    )
 
     class Meta:
         abstract = True
 
     @property
     def model(self):
-        app_name, model_name = self.model_name.split('.')
+        app_name, model_name = self.model_name.split(".")
         try:
             return apps.get_model(app_label=app_name, model_name=model_name)
         except LookupError:
