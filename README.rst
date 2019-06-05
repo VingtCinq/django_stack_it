@@ -2,6 +2,10 @@
 django-stack-it
 =============================
 
+.. image:: https://api.codacy.com/project/badge/Grade/4c1f910320434a5fb2fb828ebfcbaf95
+   :alt: Codacy Badge
+   :target: https://app.codacy.com/app/Jufik/django_stack_it?utm_source=github.com&utm_medium=referral&utm_content=VingtCinq/django_stack_it&utm_campaign=Badge_Grade_Dashboard
+
 .. image:: https://badge.fury.io/py/django-stack-it.svg
     :target: https://badge.fury.io/py/django-stack-it
 
