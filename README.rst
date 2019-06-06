@@ -12,8 +12,8 @@ django-stack-it
 .. image:: https://travis-ci.org/VingtCinq/django_stack_it.svg?branch=master
     :target: https://travis-ci.org/VingtCinq/django_stack_it
 
-.. image:: https://codecov.io/gh/jufik/django_stack_it/branch/master/graph/badge.svg
-    :target: https://codecov.io/gh/jufik/django_stack_it
+.. image:: https://codecov.io/gh/VingtCinq/django_stack_it/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/VingtCinq/django_stack_it
 
 Content management system under development
 

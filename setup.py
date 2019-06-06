@@ -49,6 +49,7 @@ setup(
     version=version,
     description="""Content management system: Pages is a list of (ordered) block and relevant content. Though to allow inline i18n content management, with high performance usage.""",
     long_description=readme + '\n\n' + history,
+    long_description_content_type="text/markdown",
     author='Julien Kieffer',
     author_email='julien@vingtcinq.io',
     url='https://github.com/jufik/django_stack_it',
