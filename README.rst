@@ -12,6 +12,9 @@ django-stack-it
 .. image:: https://api.codacy.com/project/badge/Coverage/a842b7f950cd465d91d6b06c7d56ce16    
     :target: https://www.codacy.com/app/Jufik/django_stack_it?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=VingtCinq/django_stack_it&amp;utm_campaign=Badge_Coverage
 
+.. image:: https://travis-ci.org/VingtCinq/django_stack_it.svg?branch=master
+    :target: https://travis-ci.org/VingtCinq/django_stack_it
+    
 Content management system under development
 
 
