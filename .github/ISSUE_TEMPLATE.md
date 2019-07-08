@@ -1,7 +1,7 @@
-* django_stack_it version:
-* Django version:
-* Python version:
-* Operating System:
+*   django-stack-it version:
+*   Django version:
+*   Python version:
+*   Operating System:
 
 ### Description
 

@@ -1,0 +1,3 @@
+exclude_paths:
+  - '*/js/admin/js/dropzone.js'
+  - '*/js/admin/css/dropzone.js'
