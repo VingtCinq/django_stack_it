@@ -1,14 +1,12 @@
 from django.db import models, transaction
-from django.db.utils import IntegrityError
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django.core.validators import ValidationError
 from django.core.exceptions import ImproperlyConfigured
-from django.contrib.redirects.models import Redirect
 from stack_it.utils.models.mixins import InternationalMixin
-
-
+from stack_it.seo.helpers import handle_redirection
+from django.contrib.redirects.models import Redirect
 class SEOMixin(models.Model):
     """
     Simple page to handle SEO specific fields & problematic
@@ -44,7 +42,7 @@ class InternationalSlugMixin(InternationalMixin):
     HANDLE_REDIRECTION_BOOL = False
     SLUGIFY_FROM = None
     TRANSLATION_FIELDS = ["slug", "auto_slug", "ref_full_path"]
-    slug = models.SlugField(_("Slug"), blank=True)
+    slug = models.SlugField(_("Slug"), blank=True,max_length=500)
     auto_slug = models.BooleanField(
         _("Auto Slug"),
         help_text=_(
@@ -53,7 +51,7 @@ class InternationalSlugMixin(InternationalMixin):
         default=True,
     )
     ref_full_path = models.SlugField(
-        _("Denormalized full path"), unique=True, editable=False
+        _("Denormalized full path"), unique=True, editable=False,max_length=500
     )
 
     class Meta:
@@ -207,7 +205,7 @@ class InternationalSlugMixin(InternationalMixin):
             ).delete()
 
         if touched and (not created) and self.HANDLE_REDIRECTION_BOOL:
-            self.handle_redirection(touched_full_path)
+            handle_redirection(touched_full_path)
 
         if save and touched:
             super(InternationalSlugMixin, self).save()
@@ -230,33 +228,12 @@ class InternationalSlugMixin(InternationalMixin):
         """
         slug_field_name, _slug = self.get_international_field("slug", lang)
         if self._parent is None:
-            return f"/{lang}/{_slug}/" if lang else f"/{_slug}/"
+            if _slug:
+                return f"/{lang}/{_slug}/" if lang else f"/{_slug}/"
+            else:
+                return f"/{lang}/"
         else:
             parent_ref_full_path_field_name, parent_ref_full_path = self._parent.get_international_field(
                 "ref_full_path", lang
             )
             return f"{parent_ref_full_path}{_slug}/"
-
-    def handle_redirection(self, full_paths):
-        """
-        Create-or Update redirections to instance for each paths given in full_paths
-
-        Args:
-            full_paths (list): List of str, giving which paths need redirection
-        """
-        for old_full_path, new_full_path in full_paths:
-            try:
-                with transaction.atomic():
-                    Redirect.objects.create(
-                        old_path=old_full_path,
-                        new_path=new_full_path,
-                        site_id=settings.SITE_ID,
-                    )
-            except IntegrityError:
-                Redirect.objects.filter(
-                    old_path=old_full_path, site_id=settings.SITE_ID
-                ).update(new_path=new_full_path)
-            Redirect.objects.filter(
-                new_path=old_full_path, site_id=settings.SITE_ID
-            ).update(new_path=new_full_path)
-

@@ -70,7 +70,7 @@ class PagePageContent(PageContent, PageBaseContentMixin):
         verbose_name = _("Related Page Page Content")
         verbose_name_plural = _("Related Page Page Contents")
 
-
+    
 class ModelPageContent(PageContent, ModelBaseContentMixin):
 
     """

@@ -6,6 +6,11 @@ from stack_it.models import (
     ImagePageContent,
     PagePageContent,
     ModelPageContent,
+    Template,
+    TemplateContent,
+    TextTemplateContent,
+    ImageTemplateContent,
+    PageTemplateContent
 )
 from stack_it.seo.mixins import InternationalSlugMixin
 
@@ -37,4 +42,18 @@ translator.register(
 translator.register(
     ModelPageContent,
     type("ModelPageContentTranslation", (TranslationOptions,), {"fields": tuple()}),
+)
+
+translator.register(
+    TemplateContent,
+    type("TemplateContentTranslation", (TranslationOptions,), {"fields": tuple()}),
+)
+translator.register(TextTemplateContent, TextPageContentTranslation)
+translator.register(
+    ImageTemplateContent,
+    type("ImageTemplateContentTranslation", (TranslationOptions,), {"fields": tuple()}),
+)
+translator.register(
+    PageTemplateContent,
+    type("PageTemplateContentTranslation", (TranslationOptions,), {"fields": tuple()}),
 )

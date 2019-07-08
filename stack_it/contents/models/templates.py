@@ -20,14 +20,16 @@ class TemplateContent(BaseContentMixin):
         path (CharField): Your template path, as used in "render" or include/extend
     """
 
-    path = models.CharField(max_length=200, unique=True, db_index=True)
+    template = models.ForeignKey("stack_it.Template",verbose_name=_("Template"),related_name="contents", on_delete=models.CASCADE)
 
     class Meta:
 
         verbose_name = _('Template')
         verbose_name_plural = _('Template')
-        unique_together = (('path', 'key'),)
+        unique_together = (('template', 'key'),)
 
+    def __str__(self):
+        return self.key
 
 class TextTemplateContent(TemplateContent, TextBaseContentMixin):
 

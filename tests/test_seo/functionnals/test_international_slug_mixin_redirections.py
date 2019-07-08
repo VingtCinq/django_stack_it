@@ -2,7 +2,6 @@ from django.contrib.redirects.models import Redirect
 from ddt import ddt, data
 from tests_utils.international_slug_mixin import InternationaSluglMixinTestMixin
 
-
 @ddt
 class InternationaSluglMixinFunctionnalRedirectionTest(InternationaSluglMixinTestMixin):
     """

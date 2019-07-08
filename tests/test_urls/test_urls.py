@@ -1,6 +1,6 @@
 from django.test import TestCase
 from stack_it.models import Page
-
+from django.conf import settings
 
 class TextPageContentModelTest(TestCase):
     def test_page_existence(self):

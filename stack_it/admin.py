@@ -6,12 +6,17 @@ from modeltranslation.translator import translator
 from stack_it.models import (
     Menu,
     Page,
+    Template,
     Image,
     PageContent,
     TextPageContent,
     ImagePageContent,
     PagePageContent,
     ModelPageContent,
+    TemplateContent,
+    TextTemplateContent,
+    ImageTemplateContent,
+    PageTemplateContent,
 )
 from mptt.admin import DraggableMPTTAdmin
 from polymorphic.admin import (
@@ -92,12 +97,68 @@ class PageContentInline(ParentContentInline):
 
     def get_formset(self, request, obj=None, **kwargs):
         kwargs = self._get_form_or_formset(request, obj, **kwargs)
-        print(self.trans_opts)
         exclude = self.replace_orig_field(kwargs.get("exclude")) or None
         exclude = self._exclude_original_fields(exclude)
         kwargs.update({"exclude": exclude})
-        print(kwargs)
         return super(PageContentInline, self).get_formset(request, obj, **kwargs)
+
+
+class TemplateContentInline(ParentContentInline):
+
+    """
+    Allow inline content modification
+
+    Attributes:
+        child_inlines (tuple): List inline admin classes
+        model (class): Inline Base class
+    """
+
+    class TextTemplateContentInline(ChildContentInline):
+
+        """
+        """
+
+        model = TextTemplateContent
+        readonly_fields = ("key",)
+
+    class ImageTemplateContentInline(ChildContentInline):
+
+        """Inline admin
+        """
+
+        model = ImageTemplateContent
+        autocomplete_fields = ("image",)
+        fields = ("image", "image_display", "size")
+        readonly_fields = ("image_display","key")
+        image_display = build_image_thumb("image")
+        image_display.short_description = _("Preview")
+
+        # readonly_fields = ("key", "content_type", "ref_image", "ref_alt")
+
+    class PageTemplateContentInline(ChildContentInline):
+
+        """Inline admin
+        """
+
+        model = PageTemplateContent
+        fields = ("value",)
+        autocomplete_fields = ("value",)
+        readonly_fields = ("key",)
+
+
+    model = TemplateContent
+    child_inlines = (
+        TextTemplateContentInline,
+        ImageTemplateContentInline,
+        PageTemplateContentInline,
+    )
+
+    def get_formset(self, request, obj=None, **kwargs):
+        kwargs = self._get_form_or_formset(request, obj, **kwargs)
+        exclude = self.replace_orig_field(kwargs.get("exclude")) or None
+        exclude = self._exclude_original_fields(exclude)
+        kwargs.update({"exclude": exclude})
+        return super(TemplateContentInline, self).get_formset(request, obj, **kwargs)
 
 
 class PageChildAdmin(
@@ -109,6 +170,11 @@ class PageChildAdmin(
         super(PageChildAdmin, self).__init__(*args, **kwargs)
         inlines = getattr(self, "inlines")
         self.inlines = inlines + self.content_inlines
+
+
+
+class TemplateAdmin(PolymorphicInlineSupportMixin, admin.ModelAdmin):
+    inlines = (TemplateContentInline,)
 
 
 class PageAdmin(
@@ -143,5 +209,5 @@ class PageAdmin(
     readonly_fields = ("verbose_name", "ref_full_path", "auto_slug")
     search_fields = ("title",)
 
-
+admin.site.register(Template,TemplateAdmin)
 admin.site.register(Image, ImageAdmin)

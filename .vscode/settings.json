@@ -4,4 +4,5 @@
     "python.linting.pep8Enabled": false,
     "python.linting.enabled": true,
     "restructuredtext.confPath": "${workspaceFolder}/docs",
+    "python.formatting.provider": "black",
 }
