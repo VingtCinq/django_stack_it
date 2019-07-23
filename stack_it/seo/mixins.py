@@ -7,11 +7,15 @@ from django.core.exceptions import ImproperlyConfigured
 from stack_it.utils.models.mixins import InternationalMixin
 from stack_it.seo.helpers import handle_redirection
 from django.contrib.redirects.models import Redirect
+
+
 class SEOMixin(models.Model):
     """
     Simple page to handle SEO specific fields & problematic
     TODO: add specific fields & methods
     """
+
+    meta_desctipion = models.CharField(_("Meta Description"), max_length=250)
 
     class Meta:
         abstract = True
@@ -42,7 +46,7 @@ class InternationalSlugMixin(InternationalMixin):
     HANDLE_REDIRECTION_BOOL = False
     SLUGIFY_FROM = None
     TRANSLATION_FIELDS = ["slug", "auto_slug", "ref_full_path"]
-    slug = models.SlugField(_("Slug"), blank=True,max_length=500)
+    slug = models.SlugField(_("Slug"), blank=True, max_length=500)
     auto_slug = models.BooleanField(
         _("Auto Slug"),
         help_text=_(
@@ -51,7 +55,7 @@ class InternationalSlugMixin(InternationalMixin):
         default=True,
     )
     ref_full_path = models.SlugField(
-        _("Denormalized full path"), unique=True, editable=False,max_length=500
+        _("Denormalized full path"), unique=True, editable=False, max_length=500
     )
 
     class Meta:

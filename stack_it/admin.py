@@ -31,11 +31,18 @@ from django.conf import settings
 from stack_it.images.admin import ImageAdmin, build_image_thumb
 from stack_it.contents.admin import ChildContentInline, ParentContentInline
 
+try:
+    from ckeditor.widgets import CKEditorWidget
+    from django.db import models
+
+    formfield_overrides = {models.TextField: {"widget": CKEditorWidget}}
+except ImportError:
+    formfield_overrides = {}
 # Register your models here.
 if "modeltranslation" in settings.INSTALLED_APPS:
-    from modeltranslation.admin import TabbedDjangoJqueryTranslationAdmin
+    from modeltranslation.admin import TabbedExternalJqueryTranslationAdmin
 
-    extra_admin = (TabbedDjangoJqueryTranslationAdmin,)
+    extra_admin = (TabbedExternalJqueryTranslationAdmin,)
 else:
     extra_admin = tuple()
 
@@ -56,6 +63,7 @@ class PageContentInline(ParentContentInline):
         """
 
         model = TextPageContent
+        formfield_overrides = formfield_overrides
 
     class ImagePageContentInline(ChildContentInline):
 
@@ -120,6 +128,7 @@ class TemplateContentInline(ParentContentInline):
 
         model = TextTemplateContent
         readonly_fields = ("key",)
+        formfield_overrides = formfield_overrides
 
     class ImageTemplateContentInline(ChildContentInline):
 
@@ -129,7 +138,7 @@ class TemplateContentInline(ParentContentInline):
         model = ImageTemplateContent
         autocomplete_fields = ("image",)
         fields = ("image", "image_display", "size")
-        readonly_fields = ("image_display","key")
+        readonly_fields = ("image_display", "key")
         image_display = build_image_thumb("image")
         image_display.short_description = _("Preview")
 
@@ -144,7 +153,6 @@ class TemplateContentInline(ParentContentInline):
         fields = ("value",)
         autocomplete_fields = ("value",)
         readonly_fields = ("key",)
-
 
     model = TemplateContent
     child_inlines = (
@@ -170,7 +178,6 @@ class PageChildAdmin(
         super(PageChildAdmin, self).__init__(*args, **kwargs)
         inlines = getattr(self, "inlines")
         self.inlines = inlines + self.content_inlines
-
 
 
 class TemplateAdmin(PolymorphicInlineSupportMixin, admin.ModelAdmin):
@@ -209,5 +216,6 @@ class PageAdmin(
     readonly_fields = ("verbose_name", "ref_full_path", "auto_slug")
     search_fields = ("title",)
 
-admin.site.register(Template,TemplateAdmin)
+
+admin.site.register(Template, TemplateAdmin)
 admin.site.register(Image, ImageAdmin)
