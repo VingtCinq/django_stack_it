@@ -23,6 +23,8 @@ matrix:
 install: 
   - pip install Django==$DJANGO codecov
   - pip install -r requirements_test.txt
+  - python ./makemigrations
+  
 
 # command to run tests using coverage, e.g. python setup.py test
 script: CONF=travis tox
