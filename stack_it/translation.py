@@ -10,13 +10,17 @@ from stack_it.models import (
     TemplateContent,
     TextTemplateContent,
     ImageTemplateContent,
-    PageTemplateContent
+    PageTemplateContent,
 )
 from stack_it.seo.mixins import InternationalSlugMixin
 
 
 class PageTranslation(TranslationOptions):
-    fields = InternationalSlugMixin.TRANSLATION_FIELDS + ["slug", "title"]
+    fields = InternationalSlugMixin.TRANSLATION_FIELDS + [
+        "slug",
+        "title",
+        "meta_description",
+    ]
 
 
 translator.register(Page, PageTranslation)

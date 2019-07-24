@@ -15,7 +15,7 @@ class SEOMixin(models.Model):
     TODO: add specific fields & methods
     """
 
-    meta_desctipion = models.CharField(_("Meta Description"), max_length=250)
+    meta_description = models.CharField(_("Meta Description"), max_length=250)
 
     class Meta:
         abstract = True

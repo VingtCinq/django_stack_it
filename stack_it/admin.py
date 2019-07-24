@@ -40,9 +40,9 @@ except ImportError:
     formfield_overrides = {}
 # Register your models here.
 if "modeltranslation" in settings.INSTALLED_APPS:
-    from modeltranslation.admin import TabbedExternalJqueryTranslationAdmin
+    from modeltranslation.admin import TabbedDjangoJqueryTranslationAdmin
 
-    extra_admin = (TabbedExternalJqueryTranslationAdmin,)
+    extra_admin = (TabbedDjangoJqueryTranslationAdmin,)
 else:
     extra_admin = tuple()
 
@@ -64,6 +64,7 @@ class PageContentInline(ParentContentInline):
 
         model = TextPageContent
         formfield_overrides = formfield_overrides
+        readonly_fields = ("key",)
 
     class ImagePageContentInline(ChildContentInline):
 
@@ -73,7 +74,7 @@ class PageContentInline(ParentContentInline):
         model = ImagePageContent
         autocomplete_fields = ("image",)
         fields = ("image", "image_display", "size")
-        readonly_fields = ("image_display",)
+        readonly_fields = ("image_display","key")
         image_display = build_image_thumb("image")
         image_display.short_description = _("Preview")
 
@@ -87,6 +88,7 @@ class PageContentInline(ParentContentInline):
         model = PagePageContent
         fields = ("value",)
         autocomplete_fields = ("value",)
+        readonly_fields = ("key",)
 
     class ModelPageContentInline(ChildContentInline):
 
