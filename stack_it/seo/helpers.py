@@ -3,6 +3,7 @@ from django.db.utils import IntegrityError
 from django.contrib.redirects.models import Redirect
 from django.conf import settings
 
+
 def handle_redirection(full_paths):
     """
     Create-or Update redirections to instance for each paths given in full_paths
@@ -11,6 +12,8 @@ def handle_redirection(full_paths):
         full_paths (list): List of str, giving which paths need redirection
     """
     for old_full_path, new_full_path in full_paths:
+        if old_full_path == new_full_path:
+            continue
         try:
             with transaction.atomic():
                 Redirect.objects.create(

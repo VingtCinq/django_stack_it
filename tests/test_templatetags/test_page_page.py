@@ -87,10 +87,11 @@ class PageLinkTest(TestCase):
             'page': page,
             'request': getattr(self, request_string)
         }))
-        page.values.get('key').value = "OKAY"
+        new_page = Page.objects.create(title="OKAY")
+        page.values.get('key').value =  new_page
         page.values.get('key').save()
         rendered = self.value_template.render(Context({
-            'page': page,
+            'page': new_page,
             'request': getattr(self, request_string)
         }))
         #TODO Check content

@@ -211,11 +211,10 @@ class InternationalSlugMixin(InternationalMixin):
                 touched_full_path.append((old_full_path, new_full_path))
 
         if created:
-            Redirect.objects.filter(
+            return Redirect.objects.filter(
                 old_path__in=[new for old, new in touched_full_path],
                 site_id=settings.SITE_ID,
             ).delete()
-
         if touched and (not created) and self.HANDLE_REDIRECTION_BOOL:
             handle_redirection(touched_full_path)
 

@@ -16,5 +16,34 @@ class Migration(migrations.Migration):
             field=models.CharField(default='', max_length=250, verbose_name='Meta Description'),
             preserve_default=False,
         ),
-
+        migrations.AddField(
+            model_name='page',
+            name='meta_description_en',
+            field=models.CharField(default='', max_length=250, null=True, verbose_name='Meta Description'),
+        ),
+        migrations.AddField(
+            model_name='page',
+            name='meta_description_fr',
+            field=models.CharField(default='', max_length=250, null=True, verbose_name='Meta Description'),
+        ),
+        migrations.AlterField(
+            model_name='page',
+            name='meta_description',
+            field=models.CharField(default='', max_length=250, verbose_name='Meta Description'),
+        ),
+        migrations.AlterField(
+            model_name='page',
+            name='ref_full_path',
+            field=models.SlugField(editable=False, max_length=500, verbose_name='Denormalized full path'),
+        ),
+        migrations.AlterField(
+            model_name='page',
+            name='ref_full_path_en',
+            field=models.SlugField(editable=False, max_length=500, null=True, verbose_name='Denormalized full path'),
+        ),
+        migrations.AlterField(
+            model_name='page',
+            name='ref_full_path_fr',
+            field=models.SlugField(editable=False, max_length=500, null=True, verbose_name='Denormalized full path'),
+        ),
     ]

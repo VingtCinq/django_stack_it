@@ -99,7 +99,7 @@ class ContentNodeMixin(template.Node):
 
     def render(self, context):
         content = self.content(context)
-        if hasattr(context["request"],"user") and context["request"].user.is_staff:
+        if hasattr(context["request"], "user") and context["request"].user.is_staff:
             return self.admin_template.render(
                 {
                     "id": content.id,
@@ -116,10 +116,75 @@ class TemplateContentNodeMixin(ContentNodeMixin):
         super(TemplateContentNodeMixin, self).__init__(
             instance, content_type, key, widget, nodelist
         )
-        self.instance=instance
+        self.instance = instance
+
     def _get_instance(self, context):
-        request=context['request']
-        return get_template(request,self.instance)
+        request = context["request"]
+        return get_template(request, self.instance)
+
+
+class TextTagMixin(object):
+    CONTENT_MODEL = None
+    ADMIN_TEMPLATE = "stack_it/editable.html"
+    INSTANCE_PARAMETER_NAME = None
+
+    def __init__(self, instance, content_type, key, content):
+        super(TextTagMixin, self).__init__()
+        self.instance = instance
+        self.key = key
+        self.content = content
+        self.messages = []
+        self.content_type = content_type
+        self.alternative_content_types = list(
+            dict(BaseContentMixin.CONTENT_TYPES).keys()
+        )
+        self.alternative_content_types.remove(self.content_type)
+
+    def create_content(self, instance, content_type, key, value):
+        """
+        Creates related content
+        This is meant to be overriden
+
+        Returns:
+            CONTENT_MODEL instance: Returns the CONTENT_MODEL instance which's just been created
+        """
+        attrs = dict(
+            [
+                (self.INSTANCE_PARAMETER_NAME, instance),
+                ("content_type", content_type),
+                ("key", key),
+                ("value", value),
+            ]
+        )
+        with transaction.atomic():
+            content_instance = self.CONTENT_MODEL.objects.create(**attrs)
+        getattr(instance, f"{self.content_type}s").update(
+            dict(((self.key, content_instance),))
+        )
+        return content_instance
+
+    def __call__(self):
+        instance = self.instance
+        if self.key in getattr(instance, f"{self.content_type}s").keys():
+            return getattr(instance, f"{self.content_type}s").get(self.key)
+        for content_type in self.alternative_content_types:
+            # Checking the key cannot be found anywhere else®
+            if self.key in getattr(instance, f"{content_type}s").keys():
+                content_instance = getattr(instance, f"{content_type}s").get(self.key)
+                content_instance.content_type = self.content_type
+                content_instance.save()
+                msg = (
+                    "warning",
+                    f"Automatically changed {self.key} for instance {content_instance}!",
+                )
+                self.messages.append(msg)
+                getattr(instance, f"{content_type}s").pop(self.key)
+                getattr(instance, f"{self.content_type}s").update(
+                    {self.key: content_instance}
+                )
+                return content_instance
+        return self.create_content(instance, self.content_type, self.key, self.content)
+
 
 class ImageTagMixin(object):
     CONTENT_MODEL = None
@@ -220,15 +285,15 @@ class PageTagMixin(object):
             CONTENT_MODEL instance: Returns the CONTENT_MODEL instance which's just been created
         """
         with transaction.atomic():
-            content_instance = Page.get_or_create(title=title)
+            page = Page.get_or_create(title=title)
 
-        self.CONTENT_MODEL.objects.get_or_create(
+        content_instance, created = self.CONTENT_MODEL.objects.get_or_create(
             **dict(
                 [
                     (self.INSTANCE_PARAMETER_NAME, instance),
                     ("content_type", content_type),
                     ("key", key),
-                    ("value", content_instance),
+                    ("value", page),
                 ]
             )
         )

@@ -14,9 +14,10 @@ from stack_it.models import (
 from stack_it.utils.templatetags.node_mixin import (
     ContentNodeMixin,
     TemplateContentNodeMixin,
+    TextTagMixin,
     ImageTagMixin,
     PageTagMixin,
-    get_template
+    get_template,
 )
 
 # Get an instance of a logger
@@ -25,6 +26,11 @@ register = template.Library()
 
 # PAGE SECTION
 class TextPageContentNode(ContentNodeMixin):
+    CONTENT_MODEL = TextPageContent
+    INSTANCE_PARAMETER_NAME = "page"
+
+
+class CharPageContentNode(TextTagMixin):
     CONTENT_MODEL = TextPageContent
     INSTANCE_PARAMETER_NAME = "page"
 
@@ -74,6 +80,12 @@ def pagetext(parser, token):
     return TextPageContentNode(page, content_type, key, widget, nodelist)
 
 
+@register.simple_tag(name="pagechar")
+def pagechar(page, content_type, key, widget, content):
+    text = CharPageContentNode(page, content_type, key, content)
+    return text()
+
+
 @register.simple_tag(name="pageimage")
 def pageimage(page, content_type, key, size="800x600", color="0,0,0"):
     color = tuple([int(c) for c in color.split(",")])
@@ -89,6 +101,11 @@ def pagelink(page, content_type, key, title):
 
 # PAGE SECTION
 class TextTemplateContentNode(TemplateContentNodeMixin):
+    CONTENT_MODEL = TextTemplateContent
+    INSTANCE_PARAMETER_NAME = "template"
+
+
+class CharTemplateContentNode(TextTagMixin):
     CONTENT_MODEL = TextTemplateContent
     INSTANCE_PARAMETER_NAME = "template"
 
@@ -148,7 +165,12 @@ def templatetext(parser, token):
     return TextTemplateContentNode(templatename, content_type, key, widget, nodelist)
 
 
-
+@register.simple_tag(name="templatechar", takes_context=True)
+def templatechar(context, templatename, content_type, key, widget, content):
+    request = context["request"]
+    template = get_template(request, templatename)
+    text = CharTemplateContentNode(template, content_type, key, content)
+    return text()
 
 
 @register.simple_tag(name="templateimage", takes_context=True)
