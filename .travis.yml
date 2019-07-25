@@ -25,7 +25,7 @@ install:
   - pip install -r requirements_test.txt
 
 before_script:
-  - psql -c "CREATE DATABASE testing_db;" -U postgres
+  - psql -c "CREATE DATABASE travisci;" -U postgres
   
 # command to run tests using coverage, e.g. python setup.py test
 script: CONF=travis tox
