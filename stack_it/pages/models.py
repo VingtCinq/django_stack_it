@@ -44,9 +44,9 @@ class Page(InternationalSlugMixin, PolymorphicMPTTModel, SEOMixin):
     title = models.CharField(_("Title"), max_length=250)
     status = StatusField()
     verbose_name = models.CharField(_("Instance model verbose_name"), max_length=250)
-    # key = models.SlugField(
-    #     _("Key for development"), max_length=250, blank=True, null=True
-    # )
+    key = models.SlugField(
+        _("Key for development"), max_length=250, blank=True, null=True
+    )
     objects = PageManager()
     published = status_manager_factory(PUBLISHED)()
     drafts = status_manager_factory(DRAFT)()
@@ -59,6 +59,8 @@ class Page(InternationalSlugMixin, PolymorphicMPTTModel, SEOMixin):
         return self.title
 
     def save(self, *args, **kwargs):
+        if self.key is None:
+            self.key = slugify(self.title)
         self.verbose_name = self._meta.verbose_name.title()
         super(Page, self).save(*args, **kwargs)
 
