@@ -2,9 +2,13 @@ from django.test import TestCase
 from stack_it.models import Page
 from django.conf import settings
 
+
 class TextPageContentModelTest(TestCase):
     def test_page_existence(self):
-        page = Page.objects.create(title="Hello", template_path="base.html")
+        page = Page.objects.create(
+            title="Hello", template_path="base.html", status=Page.PUBLISHED
+        )
+        page.sites.add(1)
         response = self.client.get(page.ref_full_path)
         self.assertEqual(
             response.status_code,
@@ -13,7 +17,10 @@ class TextPageContentModelTest(TestCase):
         )
 
     def test_page_redirect(self):
-        page = Page.objects.create(title="Hello", template_path="base.html")
+        page = Page.objects.create(
+            title="Hello", template_path="base.html", status=Page.PUBLISHED
+        )
+        page.sites.add(1)
         url = page.ref_full_path
         page.title = "New Title"
         page.save()
@@ -28,7 +35,10 @@ class TextPageContentModelTest(TestCase):
         )
 
     def test_404(self):
-        page = Page.objects.create(title="Hello", template_path="base.html")
+        page = Page.objects.create(
+            title="Hello", template_path="base.html", status=Page.PUBLISHED
+        )
+        page.sites.add(1)
         response = self.client.get("page.ref_full_path")
         self.assertEqual(response.status_code, 404)
 

@@ -59,7 +59,6 @@ class Page(InternationalSlugMixin, PolymorphicMPTTModel, SEOMixin):
         return self.title
 
     def save(self, *args, **kwargs):
-        print("-" * 50, self.meta_description)
         self.verbose_name = self._meta.verbose_name.title()
         super(Page, self).save(*args, **kwargs)
 

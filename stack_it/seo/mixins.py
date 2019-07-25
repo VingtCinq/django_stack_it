@@ -15,7 +15,9 @@ class SEOMixin(models.Model):
     TODO: add specific fields & methods
     """
 
-    meta_description = models.CharField(_("Meta Description"), max_length=250, default="")
+    meta_description = models.CharField(
+        _("Meta Description"), max_length=250, default=""
+    )
 
     class Meta:
         abstract = True
@@ -143,7 +145,11 @@ class InternationalSlugMixin(InternationalMixin):
             )
             slug_field_name, slug = self.get_international_field("slug", lang)
             subclasses = InternationalSlugMixin.__subclasses__()
-            site_filter = {"sites__in": self.sites.all()} if self.pk is not None else {}
+            site_filter = (
+                {"sites__in": self.sites.all()}
+                if self.pk is not None and hasattr(self, "sites")
+                else {}
+            )
             for cls in subclasses:
                 qs = cls.objects.filter(
                     **site_filter, **{ref_full_path_field_name: ref_full_path}

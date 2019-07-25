@@ -20,11 +20,11 @@ class InternationaSluglMixinFunctionnalConflictsTest(InternationaSluglMixinTestM
     )
     def test_slug_unicity_raises_an_error(self, data):
         model_1, model_2 = [self.models.get(model_name) for model_name in data]
-        model_1.objects.create(field_fr='Field FR 1', field_en_us='Field EN-US')
+        model_1.objects.create(field_fr='Field FR 1', field_en='Field en')
         with self.assertRaises(ValidationError):
-            instance = model_2(field_fr='Field FR 1', field_en_us='Field EN-US 2')
+            instance = model_2(field_fr='Field FR 1', field_en='Field en 2')
             instance.clean()
 
         with self.assertRaises(ValidationError):
-            instance = model_2(field_fr='Field FR', field_en_us='Field EN-US')
+            instance = model_2(field_fr='Field FR', field_en='Field en')
             instance.clean()

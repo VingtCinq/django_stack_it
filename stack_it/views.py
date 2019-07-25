@@ -13,7 +13,6 @@ class StackItView(View):
 
     def get_object(self, request, *args, **kwargs):
         path = request.get_full_path()
-        print(path)
         if len(path) > 0 and path[-1] != "/":
             path += "/"
         try:
@@ -24,7 +23,6 @@ class StackItView(View):
 
     def get_context_data(self, **kwargs):
         ctx = self.object.get_context_data(**kwargs)
-        print(ctx)
 
         ctx.update({"page": self.object})
         return ctx

@@ -107,7 +107,7 @@ class InternationalMixin(BaseModelMixin):
 
         Returns:
             A list of translated field_name
-            Example:['field_name_fr', 'field_name_en_us']
+            Example:['field_name_fr', 'field_name_en']
 
         Tests
         -test_utils.test_unit_international_mixins.InternationalMixinsUnitTest.test_get_international_field_names
@@ -157,7 +157,7 @@ class InternationalMixin(BaseModelMixin):
             A dict you can pass to instanciate your model.
             Example: {
                     field_name_fr:"Bonjour",
-                    field_name_en_us:"Bonjour"
+                    field_name_en:"Bonjour"
                 }
         """
         _dict = dict()
@@ -210,7 +210,7 @@ class InternationalMixin(BaseModelMixin):
             Example:
                 {
                     'field_fr': "Bonjour",
-                    'field_en_us': "World"
+                    'field_en': "World"
                 }
         """
         return dict([self.get_international_field(field_name, lang) for lang, code in self.languages])
