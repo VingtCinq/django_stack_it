@@ -84,10 +84,10 @@ def gettext(x): return x
 
 
 LANGUAGES = (
-    ('en-us', gettext('English (US)')),
+    ('en', gettext('English (US)')),
     ('fr', gettext('French'))
 )
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en'
 MODELTRANSLATION_AUTO_POPULATE = True
 MODELTRANSLATION_ENABLE_FALLBACKS = True
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

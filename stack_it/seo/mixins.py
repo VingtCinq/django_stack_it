@@ -15,7 +15,7 @@ class SEOMixin(models.Model):
     TODO: add specific fields & methods
     """
 
-    meta_description = models.CharField(_("Meta Description"), max_length=250)
+    meta_description = models.CharField(_("Meta Description"), max_length=250, default="")
 
     class Meta:
         abstract = True
@@ -55,7 +55,7 @@ class InternationalSlugMixin(InternationalMixin):
         default=True,
     )
     ref_full_path = models.SlugField(
-        _("Denormalized full path"), unique=True, editable=False, max_length=500
+        _("Denormalized full path"), editable=False, max_length=500
     )
 
     class Meta:
@@ -143,10 +143,12 @@ class InternationalSlugMixin(InternationalMixin):
             )
             slug_field_name, slug = self.get_international_field("slug", lang)
             subclasses = InternationalSlugMixin.__subclasses__()
+            site_filter = {"sites__in": self.sites.all()} if self.pk is not None else {}
             for cls in subclasses:
                 qs = cls.objects.filter(
-                    **{ref_full_path_field_name: ref_full_path}
+                    **site_filter, **{ref_full_path_field_name: ref_full_path}
                 ).exclude(pk=self.pk)
+
                 if qs.exists():
                     raise ValidationError(
                         _(
