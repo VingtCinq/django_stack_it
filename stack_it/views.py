@@ -12,11 +12,13 @@ class StackItView(View):
         return render(request, self.object.template_path, self.get_context_data())
 
     def get_object(self, request, *args, **kwargs):
-        path = request.get_full_path()
+        path = request.path
         if len(path) > 0 and path[-1] != "/":
             path += "/"
         try:
-            page = Page.published.get(ref_full_path=path, sites=get_current_site(request))
+            page = Page.published.get(
+                ref_full_path=path, sites=get_current_site(request)
+            )
         except Page.DoesNotExist:
             raise Http404()
         return page
