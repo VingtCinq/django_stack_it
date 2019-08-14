@@ -193,6 +193,7 @@ class ImageTagMixin(object):
     INSTANCE_PARAMETER_NAME = None
 
     def __init__(self, instance, content_type, key, size, color):
+        print("!" * 30, instance)
         super(ImageTagMixin, self).__init__()
         self.instance = instance
         self.key = key

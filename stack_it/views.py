@@ -8,20 +8,22 @@ from django.contrib.sites.shortcuts import get_current_site
 
 class StackItView(View):
     def get(self, request, *args, **kwargs):
-        current_site=get_current_site(request)
-        self.object = self.get_object(request,current_site, **kwargs)
-        if hasattr(self.object,'main_site_id') and self.object.main_site_id is not None and self.object.main_site_id!=current_site.id:
+        current_site = get_current_site(request)
+        self.object = self.get_object(request, current_site, **kwargs)
+        if (
+            hasattr(self.object, "main_site_id")
+            and self.object.main_site_id is not None
+            and self.object.main_site_id != current_site.id
+        ):
             return redirect(self.object.main_site.domain + self.object.ref_full_path)
         return render(request, self.object.template_path, self.get_context_data())
-            
-    def get_object(self, request,current_site, *args, **kwargs):
+
+    def get_object(self, request, current_site, *args, **kwargs):
         path = request.path
         if len(path) > 0 and path[-1] != "/":
             path += "/"
         try:
-            page = Page.published.get(
-                ref_full_path=path, sites=current_site
-            )
+            page = Page.published.get(ref_full_path=path, sites=current_site)
         except Page.DoesNotExist:
             raise Http404()
         return page
@@ -30,3 +32,15 @@ class StackItView(View):
         ctx = self.object.get_context_data(**kwargs)
         ctx.update({"page": self.object})
         return ctx
+
+
+def sitemap(request):
+    current_site = get_current_site(request)
+    pages = Page.published.filter(sites=current_site)
+    return render(
+        request,
+        "stack_it/sitemap.html",
+        {"current_site": current_site, "pages": pages},
+        content_type="application/xml",
+    )
+

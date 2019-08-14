@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+{% load i18n translation l10n %}
+
+{% get_available_languages as languages %}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+    {% for page in pages  %}
+    <url>
+        <loc>{{current_site.domain}}{{page.ref_full_path}}</loc>
+        <lastmod>{{page.date_updated|date:"Y-m-d"}}</lastmod>
+        <changefreq>{{page.changefreq}}</changefreq>
+        <priority>{{page.priority|unlocalize}}</priority>
+        {% for lang_code, lang_name in languages %}
+        <xhtml:link rel="alternate" hreflang="{{lang_code}}"
+            href="{{current_site.domain}}{% translate_url page lang_code %}" />
+        {% endfor %}
+    </url>
+    {% endfor %}
+</urlset>

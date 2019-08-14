@@ -38,7 +38,7 @@ class Page(InternationalSlugMixin, PolymorphicMPTTModel, SEOMixin):
     PAGE_ADMIN_FIELDSET = (
         _("Page"),
         {
-            "fields": ("title", "status", "key"),
+            "fields": ("title", "status", "key", "template_path", "slug"),
             "classes": ("wide",),
             "description": _("Handle page's status and data"),
         },
@@ -79,6 +79,10 @@ class Page(InternationalSlugMixin, PolymorphicMPTTModel, SEOMixin):
     key = models.SlugField(
         _("Key for development"), max_length=250, blank=True, null=True
     )
+    date_updated = models.DateTimeField(
+        verbose_name=_("Last update date"), auto_now=True
+    )
+
     objects = PageManager()
     base_manager = PolymorphicMPTTModelManager()
     published = status_manager_factory(PUBLISHED)()

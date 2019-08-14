@@ -24,6 +24,7 @@ class SEOMixin(models.Model):
                         "meta_description",
                         "meta_image",
                         "meta_image_display",
+                        "priority",
                     ),
                 ),
                 "classes": ("collapse", "wide"),
@@ -52,6 +53,23 @@ class SEOMixin(models.Model):
         ),
     )
 
+    ALWAYS = "always"
+    HOURLY = "hourly"
+    DAILY = "daily"
+    WEEKLY = "weekly"
+    MONTHLY = "monthly"
+    YEARLY = "yearly"
+    NEVER = "never"
+
+    FREQUENCIES = (
+        (ALWAYS, _("always")),
+        (HOURLY, _("hourly")),
+        (DAILY, _("daily")),
+        (WEEKLY, _("weekly")),
+        (MONTHLY, _("monthly")),
+        (YEARLY, _("yearly")),
+        (NEVER, _("never")),
+    )
     meta_description = models.CharField(
         _("Meta Description"),
         max_length=250,
@@ -111,6 +129,11 @@ class SEOMixin(models.Model):
         blank=True,
         null=True,
         related_name="od_images",
+    )
+
+    priority = models.FloatField(_("Page priority for indexation"), default=0.5)
+    changefreq = models.CharField(
+        _("Page change frequency"), max_length=50, choices=FREQUENCIES, default=MONTHLY
     )
 
     class Meta:
