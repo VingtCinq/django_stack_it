@@ -12,15 +12,155 @@ from django.contrib.redirects.models import Redirect
 class SEOMixin(models.Model):
     """
     Simple page to handle SEO specific fields & problematic
-    TODO: add specific fields & methods
     """
 
+    SEO_ADMIN_FIELDSET = (
+        (
+            _("Meta"),
+            {
+                "fields": (
+                    (
+                        "meta_title",
+                        "meta_description",
+                        "meta_image",
+                        "meta_image_display",
+                    ),
+                ),
+                "classes": ("collapse", "wide"),
+                "description": _("Handle page's Meta"),
+            },
+        ),
+        (
+            _("Twitter Meta"),
+            {
+                "fields": (
+                    ("tw_title", "tw_description", "tw_image", "tw_image_display"),
+                ),
+                "classes": ("collapse", "wide"),
+                "description": _("Handle page's Twitter Meta"),
+            },
+        ),
+        (
+            _("Open Graph Meta"),
+            {
+                "fields": (
+                    ("og_title", "og_description", "og_image", "og_image_display"),
+                ),
+                "classes": ("collapse", "wide"),
+                "description": _("Handle page's OpenGraph (Facebooks) Meta"),
+            },
+        ),
+    )
+
     meta_description = models.CharField(
-        _("Meta Description"), max_length=250, default=""
+        _("Meta Description"),
+        max_length=250,
+        default="",
+        help_text=_("keep this under 160 characters for best optimisation"),
+    )
+    meta_title = models.TextField(
+        _("Meta Title"),
+        default="",
+        help_text=_("keep this under 60 characters for best optimisation"),
+    )
+    meta_image = models.ForeignKey(
+        "stack_it.Image",
+        on_delete=models.CASCADE,
+        verbose_name=_("Meta Image"),
+        blank=True,
+        null=True,
+        related_name="meta_images",
+    )
+    tw_title = models.CharField(
+        _("Twitter Title"),
+        help_text=_("Keep this under 70 characters for best optimisation"),
+        max_length=100,
+        blank=True,
+    )
+    tw_description = models.TextField(
+        _("Twitter Description"),
+        help_text=_("Twitter description less than 200 characters"),
+        blank=True,
+    )
+    tw_image = models.ForeignKey(
+        "stack_it.Image",
+        on_delete=models.CASCADE,
+        verbose_name=_("Twitter Image"),
+        help_text=_("must be at least 120x120px"),
+        blank=True,
+        null=True,
+        related_name="tw_images",
+    )
+    ## Facebook
+    og_title = models.CharField(
+        _("Facebook Title"),
+        help_text=_("Keep it under 55 characters for best optimisation"),
+        max_length=100,
+        blank=True,
+    )
+    og_description = models.TextField(
+        _("Facebook Description"),
+        help_text=_("Facebook description less than 300 characters"),
+        blank=True,
+    )
+    og_image = models.ForeignKey(
+        "stack_it.Image",
+        on_delete=models.CASCADE,
+        verbose_name=_("Facebook Image"),
+        help_text=_("must be at least 1200x630px"),
+        blank=True,
+        null=True,
+        related_name="od_images",
     )
 
     class Meta:
         abstract = True
+
+    def _is_valid_length(self, attr, length):
+        value = len(getattr(self, attr))
+        return value <= length and value >= length / 2
+
+    def get_meta_tags(self, include_site_meta=True):
+        if include_site_meta:
+            meta = SiteMeta.get_meta_tags()
+        else:
+            meta = {}
+        for field in [
+            "meta_title",
+            "meta_description",
+            "tw_title",
+            "tw_description",
+            "og_title",
+            "og_description",
+        ]:
+            meta[field] = getattr(self, field, "")
+        for field in ["og_image", "tw_image"]:
+            if getattr(self, field):
+                meta[field] = getattr(getattr(self, field), "url")
+            else:
+                meta[field] = ""
+        meta["has_tw"] = self.has_tw
+        meta["has_og"] = self.has_og
+        return meta
+
+    @property
+    def has_tw(self):
+        return all(getattr(self, field) for field in self.TW_REQUIRED_FIELDS)
+
+    @property
+    def has_og(self):
+        return all(getattr(self, field) for field in self.OG_REQUIRED_FIELDS)
+
+    @property
+    def overall_score(self):
+        score = []
+        for key, value in self.VALID_LENGTH.items():
+            score.append(int(self._is_valid_length(key, value)))
+        return int(mean(score) * 100)
+
+    @property
+    def overall_score_str(self):
+        return f"{str(self.overall_score)}%"
 
 
 class InternationalSlugMixin(InternationalMixin):

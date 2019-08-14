@@ -27,6 +27,22 @@ class Page(InternationalSlugMixin, PolymorphicMPTTModel, SEOMixin):
 
     """
 
+    SITE_ADMIN_FIELDSET = (
+        _("Site"),
+        {
+            "fields": ("main_site", "sites"),
+            "classes": ("collapse", "wide"),
+            "description": _("Handle page's visibility on several websites"),
+        },
+    )
+    PAGE_ADMIN_FIELDSET = (
+        _("Page"),
+        {
+            "fields": ("title", "status", "key"),
+            "classes": ("wide",),
+            "description": _("Handle page's status and data"),
+        },
+    )
     TREE_PARENT_FIELD = "parent"
     ENSURE_SLUG_UNICITY_BOOL = True
     HANDLE_REDIRECTION_BOOL = True
@@ -45,8 +61,15 @@ class Page(InternationalSlugMixin, PolymorphicMPTTModel, SEOMixin):
         null=True,
         on_delete=models.CASCADE,
         related_name="pages_as_main_site",
+        help_text=_(
+            "In case the page is available on multiple websites, choose which one is to be considered as the main one"
+        ),
     )
-    sites = models.ManyToManyField(Site, verbose_name=_("Site"))
+    sites = models.ManyToManyField(
+        Site,
+        verbose_name=_("Site"),
+        help_text=_("This page will be available for each of those websites"),
+    )
     parent = PolymorphicTreeForeignKey(
         "self", on_delete=models.CASCADE, null=True, blank=True, related_name="children"
     )
@@ -121,10 +144,14 @@ class Page(InternationalSlugMixin, PolymorphicMPTTModel, SEOMixin):
         return self.ref_full_path
 
     def get_cannonical_url(self):
-        if self.main_site_id is None:
-            return self.ref_full_path
-        else:
-            return self.main_site.domain + self.ref_full_path
+        domain = ""
+
+        if self.main_site_id is None and self.sites.count() == 1:
+            domain = self.sites.first().domain
+        if self.main_site_id is not None:
+            domain = self.main_site.domain
+
+            return domain + self.ref_full_path
 
     @classmethod
     def get_or_create(cls, title=""):

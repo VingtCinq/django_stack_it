@@ -73,8 +73,8 @@ class PageContentInline(ParentContentInline):
 
         model = ImagePageContent
         autocomplete_fields = ("image",)
-        fields = ("image", "image_display", "size")
-        readonly_fields = ("image_display","key")
+        fields = ("image", "image_display", "size", "key")
+        readonly_fields = ("image_display", "key")
         image_display = build_image_thumb("image")
         image_display.short_description = _("Preview")
 
@@ -86,7 +86,7 @@ class PageContentInline(ParentContentInline):
         """
 
         model = PagePageContent
-        fields = ("value",)
+        fields = ("value", "key")
         autocomplete_fields = ("value",)
         readonly_fields = ("key",)
 
@@ -139,7 +139,7 @@ class TemplateContentInline(ParentContentInline):
 
         model = ImageTemplateContent
         autocomplete_fields = ("image",)
-        fields = ("image", "image_display", "size")
+        fields = ("image", "image_display", "size", "key")
         readonly_fields = ("image_display", "key")
         image_display = build_image_thumb("image")
         image_display.short_description = _("Preview")
@@ -152,7 +152,7 @@ class TemplateContentInline(ParentContentInline):
         """
 
         model = PageTemplateContent
-        fields = ("value",)
+        fields = ("value", "key")
         autocomplete_fields = ("value",)
         readonly_fields = ("key",)
 
@@ -182,7 +182,7 @@ class PageChildAdmin(
         self.inlines = inlines + self.content_inlines
 
 
-class TemplateAdmin(PolymorphicInlineSupportMixin, admin.ModelAdmin):
+class TemplateAdmin(PolymorphicInlineSupportMixin, *extra_admin, admin.ModelAdmin):
     inlines = (TemplateContentInline,)
 
 
@@ -215,8 +215,29 @@ class PageAdmin(
     list_display_links = ("indented_title",)
     list_filter = ("sites", "status", PolymorphicChildModelFilter)
     child_models = ()
-    readonly_fields = ("verbose_name", "ref_full_path", "auto_slug")
+    readonly_fields = (
+        "verbose_name",
+        "ref_full_path",
+        "auto_slug",
+        "meta_image_display",
+        "tw_image_display",
+        "og_image_display",
+    )
     search_fields = ("title",)
+    autocomplete_fields = ("main_site","sites","meta_image", "tw_image", "og_image")
+
+    fieldsets = (
+        *Page.SEO_ADMIN_FIELDSET,
+        Page.SITE_ADMIN_FIELDSET,
+        Page.PAGE_ADMIN_FIELDSET,
+    )
+
+    meta_image_display = build_image_thumb("meta_image")
+    meta_image_display.short_description = _("meta image preview")
+    tw_image_display = build_image_thumb("tw_image")
+    tw_image_display.short_description = _("twitter image preview")
+    og_image_display = build_image_thumb("og_image")
+    og_image_display.short_description = _("twitter image preview")
 
 
 admin.site.register(Template, TemplateAdmin)

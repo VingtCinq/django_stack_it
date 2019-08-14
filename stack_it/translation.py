@@ -20,10 +20,22 @@ class PageTranslation(TranslationOptions):
         "slug",
         "title",
         "meta_description",
+        "meta_title",
+        "tw_title",
+        "tw_description",
+        "og_title",
+        "og_description",
     ]
 
 
 translator.register(Page, PageTranslation)
+
+
+class TemplateTranslation(TranslationOptions):
+    fields = tuple()
+
+
+translator.register(Template, TemplateTranslation)
 
 
 class TextPageContentTranslation(TranslationOptions):
