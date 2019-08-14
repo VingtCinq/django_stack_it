@@ -8,6 +8,7 @@ from stack_it.contents.abstracts import (
     ModelBaseContentMixin,
 )
 
+from polymorphic.managers import PolymorphicManager
 
 class PageContent(BaseContentMixin):
 
@@ -25,6 +26,7 @@ class PageContent(BaseContentMixin):
         related_name="contents",
         on_delete=models.CASCADE,
     )
+    objects = PolymorphicManager()
 
     class Meta:
         verbose_name = _("Page Content")
@@ -52,7 +54,6 @@ class ImagePageContent(PageContent, ImageBaseContentMixin):
     Tests:
         tests.test_contents.models.pages.test_image_page_content
     """
-
     class Meta:
         verbose_name = _("Image Page Content")
         verbose_name_plural = _("Image Page Contents")
@@ -70,7 +71,7 @@ class PagePageContent(PageContent, PageBaseContentMixin):
         verbose_name = _("Related Page Page Content")
         verbose_name_plural = _("Related Page Page Contents")
 
-    
+
 class ModelPageContent(PageContent, ModelBaseContentMixin):
 
     """

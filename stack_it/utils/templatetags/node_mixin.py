@@ -4,6 +4,7 @@ from django import template
 from stack_it.contents.abstracts import BaseContentMixin
 from stack_it.models import Page, Template as TemplateModel
 from django.db import transaction
+from django.utils.safestring import mark_safe
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -105,10 +106,10 @@ class ContentNodeMixin(template.Node):
                     "id": content.id,
                     "key": self.key,
                     "widget": self.widget,
-                    "value": content.value,
+                    "value": mark_safe(content.value),
                 }
             )
-        return content.value
+        return mark_safe(content.value)
 
 
 class TemplateContentNodeMixin(ContentNodeMixin):

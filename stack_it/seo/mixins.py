@@ -154,7 +154,7 @@ class InternationalSlugMixin(InternationalMixin):
                 qs = cls.objects.filter(
                     **site_filter, **{ref_full_path_field_name: ref_full_path}
                 ).exclude(pk=self.pk)
-
+                print(qs,site_filter)
                 if qs.exists():
                     raise ValidationError(
                         _(

@@ -7,6 +7,7 @@ from stack_it.contents.abstracts import (
     PageBaseContentMixin,
     ModelBaseContentMixin,
 )
+from polymorphic.managers import PolymorphicManager
 
 
 class TemplateContent(BaseContentMixin):
@@ -20,16 +21,23 @@ class TemplateContent(BaseContentMixin):
         path (CharField): Your template path, as used in "render" or include/extend
     """
 
-    template = models.ForeignKey("stack_it.Template",verbose_name=_("Template"),related_name="contents", on_delete=models.CASCADE)
+    template = models.ForeignKey(
+        "stack_it.Template",
+        verbose_name=_("Template"),
+        related_name="contents",
+        on_delete=models.CASCADE,
+    )
+    objects = PolymorphicManager()
 
     class Meta:
 
-        verbose_name = _('Template')
-        verbose_name_plural = _('Template')
-        unique_together = (('template', 'key'),)
+        verbose_name = _("Template")
+        verbose_name_plural = _("Template")
+        unique_together = (("template", "key"),)
 
     def __str__(self):
         return self.key
+
 
 class TextTemplateContent(TemplateContent, TextBaseContentMixin):
 
@@ -40,8 +48,8 @@ class TextTemplateContent(TemplateContent, TextBaseContentMixin):
     """
 
     class Meta:
-        verbose_name = _('Text Template Content')
-        verbose_name_plural = _('Text Template Contents')
+        verbose_name = _("Text Template Content")
+        verbose_name_plural = _("Text Template Contents")
 
 
 class ImageTemplateContent(TemplateContent, ImageBaseContentMixin):
@@ -52,9 +60,10 @@ class ImageTemplateContent(TemplateContent, ImageBaseContentMixin):
         tests.test_contents.models.templates.test_image_template_content
     """
 
+
     class Meta:
-        verbose_name = _('Image Template Content')
-        verbose_name_plural = _('Image Template Contents')
+        verbose_name = _("Image Template Content")
+        verbose_name_plural = _("Image Template Contents")
 
 
 class PageTemplateContent(TemplateContent, PageBaseContentMixin):
@@ -66,8 +75,8 @@ class PageTemplateContent(TemplateContent, PageBaseContentMixin):
     """
 
     class Meta:
-        verbose_name = _('Related Page Template Content')
-        verbose_name_plural = _('Related Page Template Contents')
+        verbose_name = _("Related Page Template Content")
+        verbose_name_plural = _("Related Page Template Contents")
 
 
 class ModelTemplateContent(TemplateContent, ModelBaseContentMixin):
@@ -79,5 +88,5 @@ class ModelTemplateContent(TemplateContent, ModelBaseContentMixin):
     """
 
     class Meta:
-        verbose_name = _('Related Model Template Content')
-        verbose_name_plural = _('Related Model Template Contents')
+        verbose_name = _("Related Model Template Content")
+        verbose_name_plural = _("Related Model Template Contents")

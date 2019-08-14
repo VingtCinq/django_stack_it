@@ -8,6 +8,7 @@ from model_utils.fields import StatusField
 from django.contrib.sites.models import Site
 from django.utils.text import slugify
 from django.db.models import Q
+from polymorphic_tree.managers import PolymorphicMPTTModelManager
 
 
 class Page(InternationalSlugMixin, PolymorphicMPTTModel, SEOMixin):
@@ -37,6 +38,7 @@ class Page(InternationalSlugMixin, PolymorphicMPTTModel, SEOMixin):
     template_path = models.CharField(
         verbose_name=_("Template Path"), default="", max_length=250
     )
+    main_site = models.ForeignKey(Site, verbose_name=_("Main Site"), blank=True, null=True, on_delete=models.CASCADE, related_name="pages_as_main_site")
     sites = models.ManyToManyField(Site, verbose_name=_("Site"))
     parent = PolymorphicTreeForeignKey(
         "self", on_delete=models.CASCADE, null=True, blank=True, related_name="children"
@@ -48,6 +50,7 @@ class Page(InternationalSlugMixin, PolymorphicMPTTModel, SEOMixin):
         _("Key for development"), max_length=250, blank=True, null=True
     )
     objects = PageManager()
+    base_manager = PolymorphicMPTTModelManager()
     published = status_manager_factory(PUBLISHED)()
     drafts = status_manager_factory(DRAFT)()
 
