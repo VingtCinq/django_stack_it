@@ -8,4 +8,4 @@ class PagePageContentModelTest(TestCase):
         content = PagePageContent.objects.create(page=page, key="key", value=page)
         self.assertEqual(PagePageContent.objects.count(), 1)
         self.assertEqual(set(PagePageContent.objects.filter(pk__in=[content.pk])),
-                         set(Page.objects.first().values))
+                         set(Page.objects.first().values.values()))
