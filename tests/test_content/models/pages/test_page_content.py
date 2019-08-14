@@ -9,7 +9,7 @@ class PageContentModelTest(TestCase):
         content = PageContent.objects.create(page=page)
         self.assertEqual(PageContent.objects.count(), 1)
         self.assertEqual(set(PageContent.objects.filter(pk__in=[content.pk])),
-                         set(Page.objects.first().content_values))
+                         set(Page.objects.first().values))
 
     def test_conflict_over_multiple_models(self):
         page = Page.objects.create(title="Hello")

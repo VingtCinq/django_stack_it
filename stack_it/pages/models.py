@@ -38,7 +38,14 @@ class Page(InternationalSlugMixin, PolymorphicMPTTModel, SEOMixin):
     template_path = models.CharField(
         verbose_name=_("Template Path"), default="", max_length=250
     )
-    main_site = models.ForeignKey(Site, verbose_name=_("Main Site"), blank=True, null=True, on_delete=models.CASCADE, related_name="pages_as_main_site")
+    main_site = models.ForeignKey(
+        Site,
+        verbose_name=_("Main Site"),
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name="pages_as_main_site",
+    )
     sites = models.ManyToManyField(Site, verbose_name=_("Site"))
     parent = PolymorphicTreeForeignKey(
         "self", on_delete=models.CASCADE, null=True, blank=True, related_name="children"
@@ -112,6 +119,12 @@ class Page(InternationalSlugMixin, PolymorphicMPTTModel, SEOMixin):
 
     def get_absolute_url(self):
         return self.ref_full_path
+
+    def get_cannonical_url(self):
+        if self.main_site_id is None:
+            return self.ref_full_path
+        else:
+            return self.main_site.domain + self.ref_full_path
 
     @classmethod
     def get_or_create(cls, title=""):

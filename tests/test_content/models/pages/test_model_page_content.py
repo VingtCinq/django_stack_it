@@ -9,4 +9,4 @@ class ModelPageContentModelTest(TestCase):
                                                   model_name='stack_it.Page')
         self.assertEqual(ModelPageContent.objects.count(), 1)
         self.assertEqual(set(ModelPageContent.objects.filter(pk__in=[content.pk])),
-                         set(Page.objects.first().content_values))
+                         set(Page.objects.first().values))

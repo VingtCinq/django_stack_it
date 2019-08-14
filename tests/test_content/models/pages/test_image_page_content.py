@@ -11,4 +11,4 @@ class ImagePageContentModelTest(TestCase):
         content = ImagePageContent.objects.create(page=page, key='key', image=image)
         self.assertEqual(ImagePageContent.objects.count(), 1)
         self.assertEqual(set(ImagePageContent.objects.filter(pk__in=[content.pk])),
-                         set(Page.objects.first().content_values))
+                         set(Page.objects.first().values))
