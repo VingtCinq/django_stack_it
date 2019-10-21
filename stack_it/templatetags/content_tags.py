@@ -64,9 +64,7 @@ def pagetext(parser, token):
         content_type = content_type.strip('"').strip("'")
 
     if not (key[0] == key[-1] and key[0] in ('"', "'")):
-        raise template.TemplateSyntaxError(
-            f"key tag's argument should be in quotes: {key}"
-        )
+        key = template.Variable(key)
     else:
         key = key.strip('"').strip("'")
 
@@ -142,9 +140,7 @@ def templatetext(parser, token):
         content_type = content_type.strip('"').strip("'")
 
     if not (key[0] == key[-1] and key[0] in ('"', "'")):
-        raise template.TemplateSyntaxError(
-            f"key tag's argument should be in quotes: {key}"
-        )
+        key = template.Variable(key)
     else:
         key = key.strip('"').strip("'")
 

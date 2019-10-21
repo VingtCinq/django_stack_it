@@ -1,7 +1,12 @@
+import sys
+from importlib import reload
+from django.conf import settings
+
 from django.db import models, transaction
 from django.utils.translation import ugettext_lazy as _
 from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicTreeForeignKey
 from stack_it.seo.mixins import InternationalSlugMixin, SEOMixin
+from stack_it.permissions.mixins import PermissionMixin
 from stack_it.pages.managers import PageManager, TemplateManager, status_manager_factory
 from stack_it.contents.abstracts import BaseContentMixin
 from model_utils.fields import StatusField
@@ -11,14 +16,14 @@ from django.db.models import Q
 from polymorphic_tree.managers import PolymorphicMPTTModelManager
 
 
-class Page(InternationalSlugMixin, PolymorphicMPTTModel, SEOMixin):
+class Page(InternationalSlugMixin, PolymorphicMPTTModel, SEOMixin,PermissionMixin):
     """
     Page comes with features:
         Multilanguale Full Path denormalization
         Redirection management
 
     TODO:
-        -SEO Management, see seo/mixins/SEOMixin
+        -Permissions management
         -Validation Pipeline & Versionning
 
     template_path is allowed to change template for one page inherited model.
@@ -54,6 +59,7 @@ class Page(InternationalSlugMixin, PolymorphicMPTTModel, SEOMixin):
     template_path = models.CharField(
         verbose_name=_("Template Path"), default="", max_length=250
     )
+
     main_site = models.ForeignKey(
         Site,
         verbose_name=_("Main Site"),
@@ -100,6 +106,10 @@ class Page(InternationalSlugMixin, PolymorphicMPTTModel, SEOMixin):
             self.key = slugify(self.title)
         self.verbose_name = self._meta.verbose_name.title()
         super(Page, self).save(*args, **kwargs)
+        try:
+            reload(sys.modules[settings.ROOT_URLCONF])
+        except KeyError:
+            pass
 
     @property
     def values(self):
@@ -143,6 +153,10 @@ class Page(InternationalSlugMixin, PolymorphicMPTTModel, SEOMixin):
         context = {}
         context.update(**kwargs)
         return context
+
+    @property
+    def url(self):
+        return self.ref_full_path
 
     def get_absolute_url(self):
         return self.ref_full_path

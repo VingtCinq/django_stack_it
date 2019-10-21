@@ -34,6 +34,11 @@ class StackItView(View):
         return ctx
 
 
+def key_redirect(request, key):
+    page = Page.objects.get(key=key)
+    return redirect(page.ref_full_path, permanent=True)
+
+
 def sitemap(request):
     current_site = get_current_site(request)
     pages = Page.published.filter(sites=current_site)

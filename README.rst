@@ -47,7 +47,16 @@ Add django-stack-it's URL patterns:
         path(r'^', include('stack_it.urls')),
         ...
     ]
-    
+
+To avoid migration messup, we strongly recomend you to deport `Stack It` migrations to your project.
+This will avoid any unexpected conflict between environements, due to language addition/deletion.
+In your settings:
+
+.. code-block:: python
+    MIGRATION_MODULES = {
+        "stack_it":"tests.migrations"
+    }
+
 Basic Usage
 ----------
 As soon as you a model is linked to a URL, it should inherit from the `Page` model.
@@ -84,6 +93,7 @@ and you can see all your website organization within one unified admin doing:
 Each model and model instances will be managed from the "Page" admin,
 where all your pages are organized in a Drag n Drop interface to build up your site structure.
 
+If you want your model's to be registered as usual, add `show_in_index = True` in your admin class to allow 
     
 Features
 --------

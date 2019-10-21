@@ -37,9 +37,15 @@ class TemplateImageTest(TestCase):
         cls.anonymous_request.user = AnonymousUser()
 
     @property
-    def value_template(self):
+    def value_template_with_key_as_string(self):
         return Template(
             "{% load content_tags %}{% templateimage 'test' 'value' 'key' '200x300' '255,91,0' %}"
+        )
+
+    @property
+    def value_template_with_key_as_value(self):
+        return Template(
+            "{% load content_tags %}{% templateimage 'test' 'value' key_as_value '200x300' '255,91,0' %}"
         )
 
     @property
@@ -53,34 +59,45 @@ class TemplateImageTest(TestCase):
         ("staff_request", get_template("stack_it/editable.html")),
         ("anonymous_request", compile_template("HelloWorld")),
     )
-    def test_basic_value_creation(self, data):
+    def test_basic_value_creation_with_key_as_string(self, data):
         request_string, output = data
-        rendered = self.value_template.render(
+        rendered = self.value_template_with_key_as_string.render(
             Context({"request": getattr(self, request_string)})
         )
-        template=TemplateModel.objects.get(path="test")
+        template = TemplateModel.objects.get(path="test")
         self.assertEqual(template.contents.count(), 1)
         self.assertIn("key", template.values.keys(), template.values)
-        # TODO Check content
 
     @data(
-        ('connected_request', compile_template('HelloWorld')),
-        ('staff_request', get_template('stack_it/editable.html')),
-        ('anonymous_request', compile_template('HelloWorld')),
+        ("connected_request", compile_template("HelloWorld")),
+        ("staff_request", get_template("stack_it/editable.html")),
+        ("anonymous_request", compile_template("HelloWorld")),
+    )
+    def test_basic_value_creation_with_key_as_value(self, data):
+        request_string, output = data
+        rendered = self.value_template_with_key_as_value.render(
+            Context({"request": getattr(self, request_string), "key_as_value": "hello"})
+        )
+        template = TemplateModel.objects.get(path="test")
+        self.assertEqual(template.contents.count(), 1)
+        self.assertIn("hello", template.values.keys(), template.values)
+
+    @data(
+        ("connected_request", compile_template("HelloWorld")),
+        ("staff_request", get_template("stack_it/editable.html")),
+        ("anonymous_request", compile_template("HelloWorld")),
     )
     def test_basic_content_type_update(self, data):
         request_string, output = data
-        self.meta_template.render(Context({
-            'request': self.anonymous_request
-        }))
-        rendered = self.value_template.render(Context({
-            'request': getattr(self, request_string)
-        }))
-        template=TemplateModel.objects.get(path="test")
+        self.meta_template.render(Context({"request": self.anonymous_request}))
+        rendered = self.value_template_with_key_as_string.render(
+            Context({"request": getattr(self, request_string)})
+        )
+        template = TemplateModel.objects.get(path="test")
 
         self.assertEqual(template.contents.count(), 1)
-        self.assertIn('key', template.values.keys(), template.metas)
-        #TODO Check content
+        self.assertIn("key", template.values.keys(), template.metas)
+        # TODO Check content
 
     # @data(
     #     ('connected_request', compile_template('OKAY')),
@@ -93,12 +110,12 @@ class TemplateImageTest(TestCase):
     #     self.meta_template.render(Context({
     #         'request': self.anonymous_request
     #     }))
-    #     self.value_template.render(Context({
+    #     self.value_template_with_key_as_string.render(Context({
     #         'request': getattr(self, request_string)
     #     }))
     #     page.values.get('key').value = "OKAY"
     #     page.values.get('key').save()
-    #     rendered = self.value_template.render(Context({
+    #     rendered = self.value_template_with_key_as_string.render(Context({
     #         'request': getattr(self, request_string)
     #     }))
     #     #TODO Check content

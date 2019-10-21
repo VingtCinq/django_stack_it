@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     "factory_generator",
     "imagekit",
     "tests",
-    "stack_it",
+    "stack_it.apps.StackItConfig",
 ]
 
 SITE_ID = 1
@@ -99,3 +99,6 @@ MEDIA_FOLDERS = [
     'FOLDER',
 ]
 MEDIA_FOLDER_CHOICES = tuple((globals()[i], globals()[i]) for i in MEDIA_FOLDERS)
+MIGRATION_MODULES = {
+    "stack_it":"stackit_migrations"
+}

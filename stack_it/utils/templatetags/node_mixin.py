@@ -34,7 +34,8 @@ class ContentNodeMixin(template.Node):
     def __init__(self, instance, content_type, key, widget, nodelist):
         super(ContentNodeMixin, self).__init__()
         self.instance = template.Variable(instance)
-        self.key = key
+
+        self.key_variable = key
         self.widget = widget
         self.nodelist = nodelist
         self.messages = []
@@ -71,9 +72,18 @@ class ContentNodeMixin(template.Node):
     def _get_instance(self, context):
         return self.instance.resolve(context)
 
+    def _get_key(self, context):
+        try:
+            return self.key_variable.resolve(context)
+        except AttributeError:
+            return self.key_variable
+
     def content(self, context):
         instance = self._get_instance(context)
+        self.key = self._get_key(context)
+
         original_output = self.nodelist.render(context)
+
         if self.key in getattr(instance, f"{self.content_type}s").keys():
             return getattr(instance, f"{self.content_type}s").get(self.key)
         for content_type in self.alternative_content_types:
@@ -193,7 +203,6 @@ class ImageTagMixin(object):
     INSTANCE_PARAMETER_NAME = None
 
     def __init__(self, instance, content_type, key, size, color):
-        print("!" * 30, instance)
         super(ImageTagMixin, self).__init__()
         self.instance = instance
         self.key = key

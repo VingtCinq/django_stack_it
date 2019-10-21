@@ -10,8 +10,12 @@ from ddt import ddt, data
 
 @ddt
 class PageTextTest(TestCase):
-    value_template = Template(
+    value_template_with_key_as_string = Template(
         "{% load content_tags %}{% pagetext page 'value' 'key' 'widget' %}HelloWorld{% endpagetext %}")
+
+    value_template_with_key_as_value = Template(
+        "{% load content_tags %}{% pagetext page 'value' key_as_value 'widget' %}HelloWorld{% endpagetext %}")
+
     meta_template = Template(
         "{% load content_tags %}{% pagetext page 'meta' 'key' 'widget' %}HelloWorld{% endpagetext %}")
 
@@ -39,10 +43,10 @@ class PageTextTest(TestCase):
         ('staff_request', get_template('stack_it/editable.html')),
         ('anonymous_request', compile_template('HelloWorld')),
     )
-    def test_basic_value_creation(self, data):
+    def test_basic_value_creation_with_key_as_string(self, data):
         request_string, output = data
         page = Page.objects.create(title="My Title")
-        rendered = self.value_template.render(Context({
+        rendered = self.value_template_with_key_as_string.render(Context({
             'page': page,
             'request': getattr(self, request_string)
         }))
@@ -67,7 +71,7 @@ class PageTextTest(TestCase):
             'page': page,
             'request': self.anonymous_request
         }))
-        rendered = self.value_template.render(Context({
+        rendered = self.value_template_with_key_as_string.render(Context({
             'page': page,
             'request': getattr(self, request_string)
         }))
@@ -92,13 +96,13 @@ class PageTextTest(TestCase):
             'page': page,
             'request': self.anonymous_request
         }))
-        self.value_template.render(Context({
+        self.value_template_with_key_as_string.render(Context({
             'page': page,
             'request': getattr(self, request_string)
         }))
         page.values.get('key').value = "OKAY"
         page.values.get('key').save()
-        rendered = self.value_template.render(Context({
+        rendered = self.value_template_with_key_as_string.render(Context({
             'page': page,
             'request': getattr(self, request_string)
         }))

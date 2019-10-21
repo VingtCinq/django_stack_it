@@ -36,9 +36,15 @@ class TemplageCharTest(TestCase):
         cls.anonymous_request.user = AnonymousUser()
 
     @property
-    def value_template(self):
+    def value_template_with_key_as_string(self):
         return Template(
             "{% load content_tags %}{% templatechar 'test' 'value' 'key' 'widget' 'HelloWorld' %}"
+        )
+
+    @property
+    def value_template_with_key_as_value(self):
+        return Template(
+            "{% load content_tags %}{% templatechar 'test' 'value' key_as_value 'widget' 'HelloWorld' %}"
         )
 
     @property
@@ -52,15 +58,28 @@ class TemplageCharTest(TestCase):
         ("staff_request", get_template("stack_it/editable.html")),
         ("anonymous_request", compile_template("HelloWorld")),
     )
-    def test_basic_value_creation(self, data):
+    def test_basic_value_creation_with_key_as_string(self, data):
         request_string, output = data
-        rendered = self.value_template.render(
+        rendered = self.value_template_with_key_as_string.render(
             Context({"request": getattr(self, request_string)})
         )
         template = TemplateModel.objects.get(path="test")
         self.assertEqual(template.contents.count(), 1)
         self.assertIn("key", template.values.keys(), template.values)
 
+    @data(
+        ("connected_request", compile_template("HelloWorld")),
+        ("staff_request", get_template("stack_it/editable.html")),
+        ("anonymous_request", compile_template("HelloWorld")),
+    )
+    def test_basic_value_creation_with_key_as_value(self, data):
+        request_string, output = data
+        rendered = self.value_template_with_key_as_value.render(
+            Context({"request": getattr(self, request_string), "key_as_value": "hello"})
+        )
+        template = TemplateModel.objects.get(path="test")
+        self.assertEqual(template.contents.count(), 1)
+        self.assertIn("hello", template.values.keys(), template.values)
 
     @data(
         ("connected_request", compile_template("HelloWorld")),
@@ -70,13 +89,12 @@ class TemplageCharTest(TestCase):
     def test_basic_content_type_update(self, data):
         request_string, output = data
         self.meta_template.render(Context({"request": getattr(self, request_string)}))
-        rendered = self.value_template.render(
+        rendered = self.value_template_with_key_as_string.render(
             Context({"request": getattr(self, request_string)})
         )
         template = TemplateModel.objects.get(path="test")
         self.assertEqual(template.contents.count(), 1)
         self.assertIn("key", template.values.keys(), template.metas)
-
 
     @data(
         ("connected_request", compile_template("OKAY")),
@@ -86,13 +104,14 @@ class TemplageCharTest(TestCase):
     def test_content_modification(self, data):
         request_string, output = data
         self.meta_template.render(Context({"request": getattr(self, request_string)}))
-        self.value_template.render(Context({"request": getattr(self, request_string)}))
+        self.value_template_with_key_as_string.render(
+            Context({"request": getattr(self, request_string)})
+        )
         template = TemplateModel.objects.get(path="test")
         template.values.get("key").value = "OKAY"
         template.values.get("key").save()
         del getattr(self, request_string).templates
-        rendered = self.value_template.render(
+        rendered = self.value_template_with_key_as_string.render(
             Context({"request": getattr(self, request_string)})
         )
-
 

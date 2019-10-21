@@ -10,8 +10,11 @@ from ddt import ddt, data
 
 @ddt
 class PageCharTest(TestCase):
-    value_template = Template(
+    value_template_with_key_as_string = Template(
         "{% load content_tags %}{% pagechar page 'value' 'key' 'widget' 'Hello World!' %}"
+    )
+    value_template_with_key_as_value = Template(
+        "{% load content_tags %}{% pagechar page 'value' key_as_value 'widget' 'Hello World!' %}"
     )
     meta_template = Template(
         "{% load content_tags %}{% pagechar page 'meta' 'key' 'widget' 'Hello World!' %}"
@@ -43,15 +46,29 @@ class PageCharTest(TestCase):
         ("staff_request", get_template("stack_it/editable.html")),
         ("anonymous_request", compile_template("HelloWorld")),
     )
-    def test_basic_value_creation(self, data):
+    def test_basic_value_creation_with_key_as_string(self, data):
         request_string, output = data
         page = Page.objects.create(title="My Title")
-        rendered = self.value_template.render(
+        rendered = self.value_template_with_key_as_string.render(
             Context({"page": page, "request": getattr(self, request_string)})
         )
         self.assertEqual(page.contents.count(), 1)
         self.assertIn("key", page.values.keys(), page.metas)
-        self.assertIn("key", page.values.keys(), page.metas)
+        # TODO Check content
+
+    @data(
+        ("connected_request", compile_template("HelloWorld")),
+        ("staff_request", get_template("stack_it/editable.html")),
+        ("anonymous_request", compile_template("HelloWorld")),
+    )
+    def test_basic_value_creation_with_key_as_value(self, data):
+        request_string, output = data
+        page = Page.objects.create(title="My Title")
+        rendered = self.value_template_with_key_as_value.render(
+            Context({"page": page, "request": getattr(self, request_string), "key_as_value":"hello"})
+        )
+        self.assertEqual(page.contents.count(), 1)
+        self.assertIn("hello", page.values.keys(), page.metas)
         # TODO Check content
 
     @data(
@@ -65,7 +82,7 @@ class PageCharTest(TestCase):
         self.meta_template.render(
             Context({"page": page, "request": self.anonymous_request})
         )
-        rendered = self.value_template.render(
+        rendered = self.value_template_with_key_as_string.render(
             Context({"page": page, "request": getattr(self, request_string)})
         )
         self.assertEqual(page.contents.count(), 1)
@@ -83,12 +100,12 @@ class PageCharTest(TestCase):
         self.meta_template.render(
             Context({"page": page, "request": self.anonymous_request})
         )
-        self.value_template.render(
+        self.value_template_with_key_as_string.render(
             Context({"page": page, "request": getattr(self, request_string)})
         )
         page.values.get("key").value = "OKAY"
         page.values.get("key").save()
-        rendered = self.value_template.render(
+        rendered = self.value_template_with_key_as_string.render(
             Context({"page": page, "request": getattr(self, request_string)})
         )
         # TODO Check content
