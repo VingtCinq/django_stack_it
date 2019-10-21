@@ -167,6 +167,9 @@ class PageBaseContentMixin(models.Model):
     class Meta:
         abstract = True
 
+    def get_absolute_url(self):
+        return self.value.get_absolute_url()
+
 
 class ModelBaseContentMixin(models.Model):
 
