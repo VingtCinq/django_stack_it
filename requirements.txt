@@ -9,7 +9,7 @@ django-polymorphic-tree==1.5
 django-tag-parser==3.1
 future==0.17.1
 pilkit==2.0
-Pillow==5.4.1
+Pillow==6.2.0
 psycopg2==2.7.7
 pytz==2018.9
 six==1.12.0
