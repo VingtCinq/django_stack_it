@@ -175,7 +175,7 @@ class Page(InternationalSlugMixin, PolymorphicMPTTModel, SEOMixin,PermissionMixi
     def get_or_create(cls, title=""):
         slug = slugify(title)
         try:
-            return cls.objects.rewrite(False).get(Q(title__iexact=title) | Q(slug=slug))
+            return cls.objects.rewrite(False).get(Q(title__iexact=title) | Q(slug=slug)| Q(key=title))
         except cls.DoesNotExist:
             return cls.objects.rewrite(False).create(
                 title=title, **cls.build_international_kwargs_from_value("title", title)
