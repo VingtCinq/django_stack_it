@@ -59,5 +59,5 @@ class UrlsTest(TestCase):
             200,
             {"response": response.content, "url": page.ref_full_path},
         )
-        self.assertIn(reverse("stack_it:page", args=("hello",)), page.ref_full_path)
+        self.assertEqual(reverse("stack_it:page", args=("hello",)), page.ref_full_path)
 
