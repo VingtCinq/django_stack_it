@@ -59,7 +59,7 @@ class TextBaseContentMixin(models.Model):
 
     """
 
-    value = models.TextField(_("Value"))
+    value = models.TextField(_("Value"), blank=True)
 
     class Meta:
         abstract = True

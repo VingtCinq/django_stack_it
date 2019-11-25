@@ -229,6 +229,7 @@ class PageAdmin(
     fieldsets = (
         *Page.SEO_ADMIN_FIELDSET,
         Page.SITE_ADMIN_FIELDSET,
+        Page.PERMISSION_ADMIN_FIELDSET,
         Page.PAGE_ADMIN_FIELDSET,
     )
 
@@ -239,6 +240,9 @@ class PageAdmin(
     og_image_display = build_image_thumb("og_image")
     og_image_display.short_description = _("twitter image preview")
 
+    filter_horizontal = ('allowed_groups',)
+    class Media:
+        js=('/static/admin/js/permissions.js',)
 
 admin.site.register(Template, TemplateAdmin)
 admin.site.register(Image, ImageAdmin)

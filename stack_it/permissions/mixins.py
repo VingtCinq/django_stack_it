@@ -10,8 +10,18 @@ class PermissionMixin(models.Model):
     Simple mixin to handle permissions for objects
     """
 
+    PERMISSION_ADMIN_FIELDSET = (
+        _("Permissions"),
+        {
+            "fields": ("login_required","allowed_groups",),
+            "classes": ("collapse", "wide"),
+            "description": _("Handle page's permissions"),
+        },
+    )
+    login_required = models.BooleanField(_("Login required"), default=False)
     allowed_groups = models.ManyToManyField(
         "auth.Group",
+        blank=True,
         verbose_name=_("Groups"),
         help_text=_(
             "Which groups are allowed to see the object, page is public if left empty"
@@ -39,4 +49,7 @@ class PermissionMixin(models.Model):
 
     @property
     def is_public(self):
-        return self.allowed_groups.exists() == 0
+        if self.login_required:
+            return False
+        else:
+            return self.allowed_groups.exists() == 0

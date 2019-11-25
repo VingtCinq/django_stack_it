@@ -7,4 +7,4 @@ class TextPageContentModelTest(TestCase):
         file = Image.create_empty_image_file(name='hello.jpg')
         image = Image.objects.create(image=file, alt="World")
         self.assertEqual(Image.objects.count(), 1)
-        self.assertEqual(str(image)[0:5], 'hello')
+        self.assertEqual(str(image)[16:21], 'hello')

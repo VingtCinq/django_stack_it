@@ -33,13 +33,14 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "django.contrib.redirects",
     "django.contrib.admin",
+    "django.contrib.staticfiles",
     "polymorphic_tree",
     "polymorphic",
     "mptt",
     "factory_generator",
     "imagekit",
     "tests",
-    "stack_it.apps.StackItConfig",
+    "stack_it",
 ]
 
 SITE_ID = 1
@@ -102,3 +103,4 @@ MEDIA_FOLDER_CHOICES = tuple((globals()[i], globals()[i]) for i in MEDIA_FOLDERS
 MIGRATION_MODULES = {
     "stack_it":"stackit_migrations"
 }
+STATIC_URL ='/static/'

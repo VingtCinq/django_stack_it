@@ -21,26 +21,33 @@ class PermissionMixinUnitTest(AbstractModelTestMixin):
         obj = self.model.objects.create()
         self.assertTrue(obj.is_allowed(user=AnonymousUser()))
 
-    def test_not_public_with_anonymous_user(self):
-        obj = self.model.objects.create()
+    def test_not_public_without_group_with_anonymous_user(self):
+        obj = self.model.objects.create(login_required=True)
         self.assertFalse(obj.is_allowed(user=AnonymousUser()))
 
-    def test_not_public_with_anonymous_user(self):
+
+    def test_not_public_with_group_with_anonymous_user(self):
         group = Group.objects.create(name="Test")
         obj = self.model.objects.create()
         obj.allowed_groups.add(group)
         self.assertFalse(obj.is_allowed(user=AnonymousUser()))
 
-    def test_not_public_with_not_allowed_user(self):
+
+    def test_not_public_without_group_with_not_allowed_user(self):
         user = User.objects.create()
-        group = Group.objects.create(name="Test")
-
-        obj = self.model.objects.create()
-        obj.allowed_groups.add(group)
-
+        obj = self.model.objects.create(login_required=True)
         self.assertFalse(obj.is_allowed(user=user))
 
-    def test_not_public_with_allowed_user(self):
+
+    def test_not_public_with_group_with_not_allowed_user(self):
+        user = User.objects.create()
+        group = Group.objects.create(name="Test")
+        obj = self.model.objects.create()
+        obj.allowed_groups.add(group)
+        self.assertFalse(obj.is_allowed(user=user))
+
+
+    def test_not_public_with_goup_with_allowed_user(self):
         user = User.objects.create()
         group = Group.objects.create(name="Test")
         user.groups.add(group)

@@ -42,7 +42,7 @@ class Image(BaseModelMixin):
         default=settings.BASE_FOLDER,
     )
 
-    image = models.ImageField(_("Image"))
+    image = models.ImageField(_("Image"), upload_to="stack-it/images")
     alt = models.CharField(_("Alternative text"), max_length=50, blank=True)
 
     admin_thumbnail = ImageSpecField(
