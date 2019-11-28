@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from stack_it.models import Page
 from django.views import View
 from django.contrib.sites.shortcuts import get_current_site
-
+from django.core.exceptions import PermissionDenied
 
 class StackItView(View):
     def get(self, request, *args, **kwargs):
@@ -16,7 +16,10 @@ class StackItView(View):
             and self.object.main_site_id != current_site.id
         ):
             return redirect(self.object.main_site.domain + self.object.ref_full_path)
-        return render(request, self.object.template_path, self.get_context_data())
+        if self.object.is_allowed(request.user):
+            return render(request, self.object.template_path, self.get_context_data())
+        else:
+            raise PermissionDenied()
 
     def get_object(self, request, current_site, *args, **kwargs):
         path = request.path
