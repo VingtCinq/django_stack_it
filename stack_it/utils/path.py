@@ -7,7 +7,9 @@ class PagePathConverter:
         return path
 
     def to_url(self, page):
-        return Page.objects.get(key=page).ref_full_path[1:]
-
+        try:
+            return Page.objects.get(key=page).ref_full_path[1:]
+        except Page.DoesNotExist:
+            return page
 
 
