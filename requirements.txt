@@ -1,4 +1,4 @@
-Django==2.1.5
+Django==2.2.10
 django-appconf==1.0.3
 django-imagekit==4.0.2
 django-js-asset==1.2.2
